@@ -7,17 +7,112 @@
 	<link rel="stylesheet" type="text/css" href="./libs/bootstrap/css/bootstrap.min.css">
 	<link rel="stylesheet" type="text/css" href="./libs/bootstrap/css/bootstrap-responsive.min.css">
 	<link rel="stylesheet" type="text/css" href="./style.css">
+	<script type="text/javascript" 
+			src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAkl1cK5NsXK5TKnj-3RvyVvhDAsVT8QiU&sensor=false">
+	</script>
 	<script src="./libs/jquery-1.9.1.min.js"></script>
 	<script src="./libs/bootstrap/js/bootstrap.min.js"></script>
 	<script src="./main.js"></script>
 </head>
 <body>
+
+	<!-- HEADER -->
 	<header>
-		<div id="headerContent">
+		<div id="header-content">
+			<h1>ENU Taxis</h1>
+			<img src="./data/images/white_napier_logo.png" alt="Napier University logo">
+
+			<nav>
+				<ul>
+					<!-- Using JS, change text color depending on the current page/box open -->
+					<li><a href="#">Home</a></li>
+					<li><a href="#">About</a></li>
+					<li><a href="#">Contact</a></li>
+				</ul>
+			</nav>
 		</div>
 	</header>
-	<div id="bodyContent">
 
+	<!-- CONTENT -->
+	<div id="body-content">
+
+		<!-- GOOGLE MAP API -->
+		<div id="map-canvas"></div>
+
+		<!-- BOOKING VIEW -->
+		<div id="booking-view">
+			<!-- LEFT PART -->
+			<div id="left-part">
+				<fieldset>
+					<legend>Student details</legend>
+					<input type="text" name="fullName" id="full-name" placeholder="Full Name"><br>
+					<input type="text" name="phoneNb"  id="phone-nb"  placeholder="Phone Number"><br>
+					<input type="text" name="matNb"	   id="mat-nb"	  placeholder="Matriculation Number">
+				</fieldset>
+				<fieldset>
+					<legend>Departure time</legend>
+						<input type="button" value="ASAP" id="asap"><br>
+						or chose a time<br>
+						(Need to implement a calendar just here using jQuery.ui)
+	 			</fieldset> 
+				<fieldset>
+					<legend>People</legend>
+					Number of people: 
+					<select name="number">
+						<option value="1">1</option>
+						<option value="2">2</option>
+						<option value="3">3</option>
+						<option value="4">4</option>
+						<option value="5">5</option>
+					</select>
+				</fieldset>
+			</div>
+
+			<!-- RIGHT PART -->
+			<div id="right-part">
+				<fieldset>
+					<legend>Start Location</legend>
+					<input type="text" name="fromHouseNb"  id="from-house-nb" placeholder="House Number"><br>
+					<input type="text" name="fromStreet"   id="from-street"   placeholder="Street Name"><br>
+					<input type="text" name="fromPostcode" id="from-postcode" placeholder="Postcode"><br>
+				</fieldset>
+				<fieldset>
+					<legend>Destination</legend>
+					<input type="text" name="toHouseNb"  id="to-house-nb" placeholder="House Number"><br>
+					<input type="text" name="toStreet"   id="to-street"   placeholder="Street Name"><br>
+					<input type="text" name="toPostcode" id="to-postcode" placeholder="Postcode"><br>
+				</fieldset>
+			</div>
+
+			<div style="clear: both"></div>
+
+			<input type="button" value="Find a taxi" id="find-btn">
+		</div>
+
+		<!-- RESULT VIEW -->
+		<div id="result-view" style="display: none;">
+		</div>
+	</div>
+
+	<!-- ABOUT BOX -->
+	<div id="about-box" style="display: none;">
+
+		<!-- TO DO -->
+		
+		<h2>About Us</h2>
+		<p> A simple online taxi booking system, allows users to book a taxi via a website.  Would alert the user if no taxis/drivers were available for the time they require and would suggest the next available time for pickup.  Each booking would be emailed to the bookings staff.  E-mails would include client details as well as journey details and possibly allocate a driver.  User would be provided with an estimated cost and the route mapped out using google maps.</p>
+	</div>
+
+	<!-- CONTACT BOX -->
+	<div id="contact-box" style="display: none;">
+
+		<!-- TO DO -->
+
+		<h2>Contact Us</h2>
+		<p> If you have some problems, contact us with this address mail: </p>
+		<address>		 
+			<a href="mailto:wedmaster@enutaxis.co.uk"></a>
+		</address>
 	</div>
 </body>
 </html>

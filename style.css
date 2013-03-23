@@ -146,8 +146,8 @@ header ul a:hover {
     		box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 1px rgba(0, 0, 0, 0.2);
 }
 
-/* About box */
-#about-box {
+/* About box & Contact box*/
+#about-box, #contact-box {
 	position: fixed;
 	top: 150px;
 	left: 50%;
@@ -159,4 +159,11 @@ header ul a:hover {
 
 #about-box p {
 	text-indent: 25px;
+}
+
+#contact-box #mail-address {
+	text-align: center;
+	margin: 40px 0 20px 0;
+	font-family: 'Junction', Arial;
+	font-size: 40px;
 }

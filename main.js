@@ -23,6 +23,7 @@ function handleMenuAndBoxes() {
 	 * Hide all information boxes
 	 */
 	$("#about-box").hide();
+	$("#contact-box").hide();
 
 	/*
 	 * Close the box when the cross is clicked
@@ -33,11 +34,32 @@ function handleMenuAndBoxes() {
 	});
 
 	/*
+	 * Home-link hides all boxes
+	 */
+	$("#home-link").click(function() {
+		console.log("home-link fired");
+		$("#contact-box").hide(400);
+		$("#about-box").hide(400);
+		return false;
+	});
+
+	/*
 	 * About-link displays about-box
 	 */
 	$("#about-link").click(function() {
 		console.log("about-link fired");
+		$("#contact-box").hide(400);
 		$("#about-box").show(400);
 		return false;
-	});	
+	});
+
+	/*
+	 * Contact-link displays contact-box
+	 */
+	$("#contact-link").click(function() {
+		console.log("contact-link fired");
+		$("#about-box").hide(400);
+		$("#contact-box").show(400);
+		return false;
+	});
 }

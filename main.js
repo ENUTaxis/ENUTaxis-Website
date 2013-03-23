@@ -74,4 +74,13 @@ function handleMenuAndBoxes() {
 		$("#contact-link").addClass("actif");
 		return false;
 	});
+
+	/*
+	 * Click on the address mail opens a new window
+	 */
+	$('a[data-mailto]').click(function(){
+		var link = 'mailto:' + $(this).data('mailto');
+		window.open(link, 'Mailer');
+		return false;
+	});
 }

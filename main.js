@@ -1,7 +1,8 @@
 /*
  * General variables
  */
-var mapButtonDisplayed = true;
+var mapExpanded = false;
+var map;
 
 /*
  * Google Map Functions
@@ -9,10 +10,17 @@ var mapButtonDisplayed = true;
 function initialize() {
 	var mapOptions = {
 		center: new google.maps.LatLng( 55.973414,-3.188782 ),
-		zoom: 12,
-		mapTypeId: google.maps.MapTypeId.ROADMAP
+		mapTypeId: google.maps.MapTypeId.ROADMAP,
+		disableDoubleClickZoom: true,
+		streetViewControl: false,
+		navigationControl: false,
+		mapTypeControl: false,
+		scaleControl: false,
+		scrollwheel: false,
+		draggable: false,
+		zoom: 12
 	};
-	var map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
+	map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
 }
 google.maps.event.addDomListener(window, 'load', initialize);
 
@@ -92,18 +100,72 @@ function handleMenuAndBoxes() {
 }
 
 function handleMapButton() {
-	$("#map-button").click(function() {
-		console.log("map-button fired");
-		toggleMapButton();
+	$("#expand-button").click(function() {
+		console.log("expand-button fired");
+
+		// Hide the expand button
+		$("#expand-button").fadeTo(400, 0, function() {
+			$("#expand-button").hide();
+
+			// Make the Google Map bigger
+			$("#map-container").height(450);
+			$("#map-canvas").height(450);
+
+			// Display the minimize button
+			$("#minimize-button").show();
+
+			setTimeout(refreshMap, 500);
+			enableGMapControl();
+			mapExpanded = true;
+		});
+	});
+
+	$("#minimize-button").click(function() {
+		console.log("minimize-button fired");
+
+		disableGMapsControl();
+
+		// Hide the minimize button
+		$("#minimize-button").fadeOut(600, 0, function() {
+			$("#minimize-button").hide();
+		});
+
+		// Make the Google Map smaller
+		$("#map-container").height(300);
+		$("#map-canvas").height(300);
+
+		// Display the expand button
+		$("#expand-button").show();
+		$("#expand-button").delay(700).fadeTo(500, 1);
+
+		mapExpanded = false;
 	});
 }
 
-function toggleMapButton() {
-	if(mapButtonDisplayed) {
-		$("#map-button").fadeTo(600, 0.4);
-		mapButtonDisplayed = false;
-	} else {
-		$("#map-button").fadeTo(600, 1);
-		mapButtonDisplayed = true;
-	}
+function refreshMap()
+{
+	console.log("refresh the G.Maps");
+    google.maps.event.trigger(map, 'resize');
+}
+
+function disableGMapsControl() {
+	var mapOptions = {
+		disableDoubleClickZoom: true,
+		navigationControl: false,
+		scaleControl: false,
+		scrollwheel: false,
+		draggable: false
+	};
+    map.setOptions(mapOptions);
+}
+
+function enableGMapControl() {
+	var mapOptions = {
+		disableDoubleClickZoom: false,
+		navigationControl: true,
+		scaleControl: true,
+		scrollwheel: true,
+		draggable: true
+	};
+    map.setOptions(mapOptions);
 }

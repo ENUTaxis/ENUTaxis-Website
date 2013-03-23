@@ -146,4 +146,17 @@ header ul a:hover {
     		box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 1px rgba(0, 0, 0, 0.2);
 }
 
-#body-content
+/* About box */
+#about-box {
+	position: fixed;
+	top: 150px;
+	left: 50%;
+	margin-left: -325px;
+	z-index: 1000;
+	width: 600px;
+	text-align: justify;
+}
+
+#about-box p {
+	text-indent: 25px;
+}

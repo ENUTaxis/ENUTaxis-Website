@@ -100,10 +100,58 @@ header ul a.actif {
 	padding-bottom: 100px;
 }
 
-#body-content #map-canvas {
-	width: 800px;
-	height: 300px;
-}
+/** Map container */
+	#map-container {
+		position: relative;
+		width: 800px;
+		height: 300px;
+	}
+
+	#map-container #map-canvas {
+		width: 800px;
+		height: 300px;
+	}
+
+	#map-container #map-button {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 250px;
+		height: 300px;
+	}
+
+	#map-container #map-button #rectangle {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100px;
+		height: 300px;
+		background-color: rgba(176, 25, 55, 0.6);
+	}
+
+	#map-container #map-button #triangle {
+		position: absolute;
+		top: 0;
+		left: 100px;
+		background: url("data/images/red triangle.png") no-repeat;
+		width: 150px;
+		height: 300px;
+	}
+
+	#map-container #map-button p#expand-text {
+		margin: 0;
+		width: 280px;
+		position: absolute;
+		top: 130px;
+		left: 0px;
+		color: #FFF;
+		font-size: 24px;
+		line-height: 150%;
+		-webkit-transform: rotate(295deg);
+		   -moz-transform: rotate(295deg);
+			 -o-transform: rotate(295deg);
+				transform: rotate(295deg);
+	}
 
 #body-content #left-part {
 	float: left;

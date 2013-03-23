@@ -1,4 +1,9 @@
 /*
+ * General variables
+ */
+var mapButtonDisplayed = true;
+
+/*
  * Google Map Functions
  */
 function initialize() {
@@ -16,6 +21,7 @@ google.maps.event.addDomListener(window, 'load', initialize);
  */
 $(function() {
 	handleMenuAndBoxes();
+	handleMapButton();
 });
 
 function handleMenuAndBoxes() {
@@ -78,9 +84,26 @@ function handleMenuAndBoxes() {
 	/*
 	 * Click on the address mail opens a new window
 	 */
-	$('a[data-mailto]').click(function(){
+	$("a[data-mailto]").click(function(){
 		var link = 'mailto:' + $(this).data('mailto');
 		window.open(link, 'Mailer');
 		return false;
 	});
+}
+
+function handleMapButton() {
+	$("#map-button").click(function() {
+		console.log("map-button fired");
+		toggleMapButton();
+	});
+}
+
+function toggleMapButton() {
+	if(mapButtonDisplayed) {
+		$("#map-button").fadeTo(600, 0.4);
+		mapButtonDisplayed = false;
+	} else {
+		$("#map-button").fadeTo(600, 1);
+		mapButtonDisplayed = true;
+	}
 }

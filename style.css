@@ -25,6 +25,7 @@
 /* General CSS */
 body {
 	font-family: "Junction", Arial;
+	background-color: #EEE;
 }
 
 /* Header part*/
@@ -36,6 +37,10 @@ header {
 	width: 100%;
 	height: 110px;
 	background-color: #545454;
+	-webkit-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.6);
+	   -moz-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.6);
+		 -o-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.6);
+			box-shadow: 0 2px 5px rgba(0, 0, 0, 0.6);
 }
 
 header #header-content {
@@ -55,8 +60,8 @@ header h1 {
 
 header img {
 	position: absolute;
-	right: 10px;
-	top: 5px;
+	right: -20px;
+	top: 25px;
 }
 
 header nav {
@@ -98,6 +103,8 @@ header ul a.actif {
 	margin: 0 auto;
 	padding-top: 110px;
 	padding-bottom: 100px;
+	border-left:  1px solid #AAA;
+	border-right: 1px solid #AAA;
 }
 
 /** Map container */
@@ -184,21 +191,84 @@ header ul a.actif {
 #body-content #left-part {
 	float: left;
 	width: 398px;
+	margin-top: 20px;
 	border-right: 2px solid #B01936;
 }
 
 #body-content #right-part {
 	float: right;
 	width: 390px;
+	margin-top: 20px;
 	text-align: right;
 }
 
-#body-content fieldset legend {
-	border: 0; /* remove the auto white border at the bottom */
-	padding-top: 30px;
-	padding-left: 5px;
-	padding-right: 5px;
+#body-content fieldset {
+	margin-bottom: 30px;
+}
+
+#legend {
+	position: relative;
+	height: 50px;
+	margin-bottom: 15px;
+}
+
+#legend h3 {
+	position: absolute;
+	top: 0;
+	margin: 0px;
+	height: 44px;
+	font-weight: normal;
 	font-size: 30px;
+	color: #FFF;
+	background-color: #5D5D5D;
+}
+
+#left-part #legend h3 {
+	left: 0;	
+	width: 225px;
+	padding: 5px 0 0 5px;
+	-webkit-box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
+	   -moz-box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
+		 -o-box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
+			box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
+}
+
+#right-part #legend h3 {
+	right: 0;
+	width: 220px;
+	padding: 5px 5px 0 0;
+	-webkit-box-shadow: -2px 2px 5px rgba(0, 0, 0, 0.8);
+	   -moz-box-shadow: -2px 2px 5px rgba(0, 0, 0, 0.8);
+		 -o-box-shadow: -2px 2px 5px rgba(0, 0, 0, 0.8);
+			box-shadow: -2px 2px 5px rgba(0, 0, 0, 0.8);
+}
+
+.left-gray-triangle {
+	z-index: 2;
+	position: absolute;
+	top: 0;
+	left: 230px;
+	width: 50px;
+	height: 50px;
+	background: url("data/images/gray triangle left.png") no-repeat;
+}
+
+.right-gray-triangle {
+	z-index: 2;
+	position: absolute;
+	top: 0;
+	right: 225px;
+	width: 50px;
+	height: 50px;
+	background: url("data/images/gray triangle right.png") no-repeat;
+}
+
+#left-part #legend.people h3 {
+	width: 100px;
+}
+
+#legend.people .left-gray-triangle {
+	left: 105px;
 }
 
 #body-content fieldset input {
@@ -246,5 +316,11 @@ header ul a.actif {
 	text-align: center;
 	margin: 40px 0 20px 0;
 	font-family: 'Junction', Arial;
-	font-size: 40px;
+	font-size: 30px;
+}
+
+.alert-perso-info {
+	color: #3a87ad;
+	background-color: #d9edf7;
+	border-color: #97B0B5;
 }

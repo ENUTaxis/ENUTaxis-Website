@@ -40,6 +40,10 @@ function handleMenuAndBoxes() {
 		console.log("home-link fired");
 		$("#contact-box").hide(400);
 		$("#about-box").hide(400);
+
+		$("#home-link").addClass("actif");
+		$("#about-link").removeClass("actif");
+		$("#contact-link").removeClass("actif");
 		return false;
 	});
 
@@ -50,6 +54,10 @@ function handleMenuAndBoxes() {
 		console.log("about-link fired");
 		$("#contact-box").hide(400);
 		$("#about-box").show(400);
+
+		$("#home-link").removeClass("actif");
+		$("#about-link").addClass("actif");
+		$("#contact-link").removeClass("actif");
 		return false;
 	});
 
@@ -60,6 +68,10 @@ function handleMenuAndBoxes() {
 		console.log("contact-link fired");
 		$("#about-box").hide(400);
 		$("#contact-box").show(400);
+
+		$("#home-link").removeClass("actif");
+		$("#about-link").removeClass("actif");
+		$("#contact-link").addClass("actif");
 		return false;
 	});
 }

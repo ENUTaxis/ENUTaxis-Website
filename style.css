@@ -76,13 +76,18 @@ header li {
 }
 
 header ul a {
-	color: #FFF;
+	color: #AAA;
 	font-size: 14px;
 }
 
 header ul a:hover {
-	color: #7A991A;
+	color: #FFF;
 	text-decoration: none;
+}
+
+header ul a.actif {
+	color: #FFF;
+	text-shadow:1px 1px 1px #AAA;
 }
 
 /* Content part*/

@@ -136,6 +136,10 @@ header ul a.actif {
 		height: 300px;
 	}
 
+	#map-container #expand-button:hover {
+		cursor: pointer;
+	}
+
 	#map-container #expand-button #rectangle {
 		position: absolute;
 		top: 0;
@@ -167,6 +171,10 @@ header ul a.actif {
 		   -moz-transform: rotate(295deg);
 			 -o-transform: rotate(295deg);
 				transform: rotate(295deg);
+	}
+
+	#map-container p#minimize-button:hover {
+		cursor: pointer;
 	}
 
 	#map-container p#minimize-button {

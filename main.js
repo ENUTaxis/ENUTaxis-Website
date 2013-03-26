@@ -4,6 +4,7 @@
 var mapExpanded = false;
 var calendarDisplayed = false;
 var map;
+var geocoder;
 
 /*
  * General JS functions
@@ -18,6 +19,7 @@ $(function() {
 	handleMenuAndBoxes();
 	handleMapButton();
 	handleTimeButtons();
+	autocompleteInputFieldsUsingGeocoder();
 });
 
 function handleMenuAndBoxes() {
@@ -186,6 +188,31 @@ function enableGMapControl() {
 		draggable: true
 	};
     map.setOptions(mapOptions);
+}
+
+function autocompleteInputFieldsUsingGeocoder() {
+	geocoder = new google.maps.Geocoder();
+
+	$("#from-street").autocomplete({
+		source: function(request, response) {
+			geocoder.geocode( {'address': request.term }, function(results, status) {
+				response($.map(results, function(item) {
+					return {
+						label:  item.formatted_address,
+						value: item.formatted_address,
+						latitude: item.geometry.location.lat(),
+						longitude: item.geometry.location.lng()
+					}
+				}));
+			})
+		},
+		select: function(event, ui) {
+			/*$( "#latitude" ).val(ui.item.latitude);
+			$( "#longitude" ).val(ui.item.longitude);*/
+			var location = new google.maps.LatLng(ui.item.latitude, ui.item.longitude);
+			console.log($("#from-street").val() + ": " + location.toString());
+		}
+	});
 }
 
 /*

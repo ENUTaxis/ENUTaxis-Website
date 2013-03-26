@@ -2,34 +2,22 @@
  * General variables
  */
 var mapExpanded = false;
+var calendarDisplayed = false;
 var map;
-
-/*
- * Google Map Functions
- */
-function initialize() {
-	var mapOptions = {
-		center: new google.maps.LatLng( 55.973414,-3.188782 ),
-		mapTypeId: google.maps.MapTypeId.ROADMAP,
-		disableDoubleClickZoom: true,
-		streetViewControl: false,
-		navigationControl: false,
-		mapTypeControl: false,
-		scaleControl: false,
-		scrollwheel: false,
-		draggable: false,
-		zoom: 12
-	};
-	map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
-}
-google.maps.event.addDomListener(window, 'load', initialize);
 
 /*
  * General JS functions
  */
 $(function() {
+	/*
+	 * Initialize the DatePicker (jQuery.ui library)
+	 */
+	$("#datepicker").datepicker().hide();
+
+	initializeTheMap();
 	handleMenuAndBoxes();
 	handleMapButton();
+	handleTimeButtons();
 });
 
 function handleMenuAndBoxes() {
@@ -97,6 +85,36 @@ function handleMenuAndBoxes() {
 		window.open(link, 'Mailer');
 		return false;
 	});
+}
+
+function handleTimeButtons() {
+	$("#asap").click(function() {
+		console.log("asap button fired");
+		hideCalendar();
+	});
+	$("#selectDateTime").click(function() {
+		console.log("selectDateTime button fired");
+		showCalendar();
+	});
+}
+
+/*
+ * Methods to control/manage the Google Maps widget
+ */
+function initializeTheMap() {
+	var mapOptions = {
+		center: new google.maps.LatLng( 55.973414,-3.188782 ),
+		mapTypeId: google.maps.MapTypeId.ROADMAP,
+		disableDoubleClickZoom: true,
+		streetViewControl: false,
+		navigationControl: false,
+		mapTypeControl: false,
+		scaleControl: false,
+		scrollwheel: false,
+		draggable: false,
+		zoom: 12
+	};
+	map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
 }
 
 function handleMapButton() {
@@ -168,4 +186,29 @@ function enableGMapControl() {
 		draggable: true
 	};
     map.setOptions(mapOptions);
+}
+
+/*
+ * jQuery.ui calendar widget methods
+ */
+function hideCalendar() {
+	if(calendarDisplayed) {
+		console.log("Hide the calendar");
+		$("#datepicker").hide(300);
+		calendarDisplayed = false;
+	}
+}
+
+function showCalendar() {
+	if(!calendarDisplayed) {
+		console.log("Show the calendar");
+		$("#datepicker").show(300);
+		calendarDisplayed = true;
+	}
+}
+
+function getDate() {
+	console.log("Get the chosen date");
+	var currentDate = $("#datepicker").datepicker("getDate");
+	console.log(currentDate);
 }

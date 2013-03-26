@@ -6,11 +6,13 @@
 	
 	<link rel="stylesheet" type="text/css" href="./libs/bootstrap/css/bootstrap.min.css">
 	<link rel="stylesheet" type="text/css" href="./libs/bootstrap/css/bootstrap-responsive.min.css">
+	<link rel="stylesheet" type="text/css" href="./libs/jquery-ui/jquery-ui-1.10.2.custom.css">
 	<link rel="stylesheet" type="text/css" href="./style.css">
 	<script type="text/javascript" 
 			src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAkl1cK5NsXK5TKnj-3RvyVvhDAsVT8QiU&sensor=false">
 	</script>
 	<script src="./libs/jquery-1.9.1.min.js"></script>
+	<script src="./libs/jquery-ui/jquery-ui-1.10.2.custom.js"></script>
 	<script src="./libs/bootstrap/js/bootstrap.min.js"></script>
 	<script src="./main.js"></script>
 </head>
@@ -63,9 +65,8 @@
 						<h3>Departure time</h3>
 						<div class="left-gray-triangle"></div>
 					</div>
-					<input type="button" value="ASAP" id="asap"><br>
-					or chose a time<br>
-					(Need to implement a calendar just here using jQuery.ui)
+					<input type="button" value="ASAP" id="asap"><input type="button" value="Select a Date/Time" id="selectDateTime">
+					<div id="datepicker"></div>
 	 			</fieldset> 
 				<fieldset>
 					<div id="legend" class="people">

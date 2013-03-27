@@ -1,10 +1,29 @@
 /*
  * General variables
  */
-var mapExpanded = false;
-var calendarDisplayed = false;
-var map;
-var geocoder;
+	// Calendar
+	var calendarDisplayed = false;
+
+	// Google Maps
+	var mapExpanded = false;
+	var map;
+
+	// Geocoder
+	var geocoder;
+
+	// Direction Service + Renderer
+	var directionsService;
+	var directionsRenderer;
+
+	// Markers
+	var isFromMarkerSet = false;
+	var isToMarkerSet = false;
+	var fromMarker;
+	var toMarker;
+	var bounds;
+
+	// Locations
+	var Edinburgh;
 
 /*
  * General JS functions
@@ -104,8 +123,10 @@ function handleTimeButtons() {
  * Methods to control/manage the Google Maps widget
  */
 function initializeTheMap() {
+	Edinburgh = new google.maps.LatLng( 55.973414,-3.188782 );
+
 	var mapOptions = {
-		center: new google.maps.LatLng( 55.973414,-3.188782 ),
+		center: Edinburgh,
 		mapTypeId: google.maps.MapTypeId.ROADMAP,
 		disableDoubleClickZoom: true,
 		streetViewControl: false,
@@ -116,7 +137,102 @@ function initializeTheMap() {
 		draggable: false,
 		zoom: 12
 	};
+	
 	map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
+
+	/*
+	 * Create two Markers and add it to the Map (not visible)
+	 */
+	fromMarker = new google.maps.Marker({
+		position: Edinburgh,
+		title:"Departure flag"
+	});
+	toMarker = new google.maps.Marker({
+		position: Edinburgh,
+		title:"Arrival flag"
+	});
+	fromMarker.setVisible(false);
+	toMarker.setVisible(false);
+	fromMarker.setMap(map);
+	toMarker.setMap(map);
+
+	/*
+	 * Objects that calculates and draw the route between two points
+	 */
+	directionsService = new google.maps.DirectionsService();
+	directionsRenderer  = new google.maps.DirectionsRenderer({
+		draggable: true,
+		hideRouteList: true,
+		map: map
+	});
+
+	/*
+	 * LatLngBounds to make a zoom that show all Makers
+	 */
+	bounds = new google.maps.LatLngBounds();
+
+	/*
+	 * onClick listenner to put Markers
+	 */
+	google.maps.event.addListener(map, 'click', function(event) {
+		if(!mapExpanded) return;
+		if(!isFromMarkerSet) {
+			fromMarker.setPosition(event.latLng);
+			fromMarker.setVisible(true);
+			isFromMarkerSet = true;
+			geocoder.geocode( {'latLng': fromMarker.getPosition() }, function(results, status) {
+				if (status == google.maps.GeocoderStatus.OK) {
+					var address = selectStreetAddress(results);
+					if(address != false)
+						fillFormFromMarkers(address, true);
+				} else {
+					console.log("There was an error in your request. Requeststatus: " + status);
+				}
+			});
+		} else if(!isToMarkerSet) {
+			toMarker.setPosition(event.latLng);
+			toMarker.setVisible(true);
+			isToMarkerSet = true;
+			geocoder.geocode( {'latLng': toMarker.getPosition() }, function(results, status) {
+				if (status == google.maps.GeocoderStatus.OK) {
+					var address = selectStreetAddress(results);
+					if(address != false)
+						fillFormFromMarkers(address, false);
+				} else {
+					console.log("There was an error in your request. Requeststatus: " + status);
+				}
+			});
+		}
+		if(isFromMarkerSet && isToMarkerSet) drawRouteOnTheMap();
+	});
+
+	/*
+	 * Listenner when direction is changed
+	 */
+	google.maps.event.addListener(directionsRenderer, 'directions_changed', function(event) {
+		console.log("Direction changed");
+		console.log(directionsRenderer.getDirections().routes);
+		var fromLocation = directionsRenderer.getDirections().routes[0].legs[0].start_location;
+		var toLocation   = directionsRenderer.getDirections().routes[0].legs[0].end_location;
+		geocoder.geocode( {'latLng': fromLocation }, function(results, status) {
+			if (status == google.maps.GeocoderStatus.OK) {
+				var address = selectStreetAddress(results);
+				if(address != false)
+					fillFormFromMarkers(address, false);
+			} else {
+				console.log("There was an error in your request. Requeststatus: " + status);
+			}
+		});
+		geocoder.geocode( {'latLng': toLocation }, function(results, status) {
+			if (status == google.maps.GeocoderStatus.OK) {
+				var address = selectStreetAddress(results);
+				if(address != false)
+					fillFormFromMarkers(address, false);
+			} else {
+				console.log("There was an error in your request. Requeststatus: " + status);
+			}
+		});
+	});
 }
 
 function handleMapButton() {
@@ -190,9 +306,33 @@ function enableGMapControl() {
     map.setOptions(mapOptions);
 }
 
+function drawRouteOnTheMap() {
+	if(!isFromMarkerSet || !isToMarkerSet) return;
+	var request = {
+		origin: fromMarker.getPosition(),
+		destination: toMarker.getPosition(),
+		unitSystem: google.maps.UnitSystem.IMPERIAL,
+		travelMode: google.maps.DirectionsTravelMode["DRIVING"]
+	};
+
+	directionsService.route(request, function(response, status) {
+		if(status == google.maps.DirectionsStatus.OK) {
+			fromMarker.setVisible(false);
+			toMarker.setVisible(false);
+			directionsRenderer.setDirections(response);
+			map.fitBounds(bounds);
+		} else {
+			console.log("There was an error in your request. Requeststatus: " + status);
+		}
+	});
+}
+
 function autocompleteInputFieldsUsingGeocoder() {
 	geocoder = new google.maps.Geocoder();
 
+	/*
+	 * Input field 'from-street'
+	 */
 	$("#from-street").autocomplete({
 		source: function(request, response) {
 			geocoder.geocode( {'address': request.term }, function(results, status) {
@@ -207,12 +347,85 @@ function autocompleteInputFieldsUsingGeocoder() {
 			})
 		},
 		select: function(event, ui) {
-			/*$( "#latitude" ).val(ui.item.latitude);
-			$( "#longitude" ).val(ui.item.longitude);*/
 			var location = new google.maps.LatLng(ui.item.latitude, ui.item.longitude);
-			console.log($("#from-street").val() + ": " + location.toString());
+			var departureAddress = ui.item.value.split(',');
+			var inEdinburgh = false;
+			departureAddress.forEach(function(i) {
+				if(i.trim() == "Edinburgh") inEdinburgh = true;
+			});
+
+			if(inEdinburgh) {
+				fromMarker.setPosition(location);
+				fromMarker.setVisible(true);
+				map.panTo(location);
+				bounds.extend(location);
+				isFromMarkerSet = true;
+				if(isFromMarkerSet && isToMarkerSet) drawRouteOnTheMap();
+			}
 		}
 	});
+
+	/*
+	 * Input field 'to-street'
+	 */
+	$("#to-street").autocomplete({
+		source: function(request, response) {
+			geocoder.geocode( {'address': request.term }, function(results, status) {
+				response($.map(results, function(item) {
+					return {
+						label:  item.formatted_address,
+						value: item.formatted_address,
+						latitude: item.geometry.location.lat(),
+						longitude: item.geometry.location.lng()
+					}
+				}));
+			})
+		},
+		select: function(event, ui) {
+			var location = new google.maps.LatLng(ui.item.latitude, ui.item.longitude);
+			var arrivalAddress = ui.item.value.split(',');
+			var inEdinburgh = false;
+			arrivalAddress.forEach(function(i) {
+				if(i.trim() == "Edinburgh") inEdinburgh = true;
+			});
+
+			if(inEdinburgh) {
+				toMarker.setPosition(location);
+				toMarker.setVisible(true);
+				map.panTo(location);
+				bounds.extend(location);
+				isToMarkerSet = true;
+				if(isFromMarkerSet && isToMarkerSet) drawRouteOnTheMap();
+			}
+		}
+	});
+}
+
+function selectStreetAddress(addresses) {
+	var address = false;
+	addresses.forEach(function(item) {
+		if(item.types[0] == "street_address") {
+			address = item;
+		}
+	});
+	return address;
+}
+
+function fillFormFromMarkers(address, isDeparture) {
+	console.log(address);
+	var streetNb   = address.address_components[0].long_name;
+	var streetName = address.address_components[1].long_name;
+	var postcode   = address.address_components[5].long_name;
+
+	if(isDeparture) {
+		$("#from-house-nb").val(streetNb);
+		$("#from-street").val(streetName);
+		$("#from-postcode").val(postcode);
+	} else {
+		$("#to-house-nb").val(streetNb);
+		$("#to-street").val(streetName);
+		$("#to-postcode").val(postcode);
+	}
 }
 
 /*

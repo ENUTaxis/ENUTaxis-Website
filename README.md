@@ -14,6 +14,17 @@ Comming soon...
 - David Guyon
 
 ##Last important updates
+###29/03/2013
+- phpFunctions folder renamed for "scripts"
+- The HTML and CSS is written according to the Cacoo draft
+- The Google Maps is implemented
+- Some JS allows the user to expand/minimize the Map
+- The customer is able to put two Markers on the Map
+- They're also able to use the form and Markers are automatically put on the Map
+- Street input fields are using the Geocoder from Google (autocomplete fields)
+- The first PHP scripts are now on the project (need to be tested)
+- Links on the header are functional (open an information box)
+
 ###13/03/2013
 - First commit which contains basic empty files
 - The HTML file contains the basic HTML tags with an empty <body>

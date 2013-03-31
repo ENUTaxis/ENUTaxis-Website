@@ -5,11 +5,11 @@
 	$database = "GSn9I4gX";
 	$link = mysql_connect($hostname, $username, $password);
 	if(!$link) {
-		die("db connect error");
+		die("database connection error: " . mysql_error());
 	}
 	$db_selected = mysql_select_db($database, $link);
 	if (!$db_selected) {
-		die("db select error");
+		die("database selection error: " . mysql_error());
 	}
 ?>
 

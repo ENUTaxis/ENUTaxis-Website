@@ -38,6 +38,7 @@ $(function() {
 	handleMenuAndBoxes();
 	handleMapButton();
 	handleTimeButtons();
+	handleFindButton();
 	autocompleteInputFieldsUsingGeocoder();
 });
 
@@ -116,6 +117,20 @@ function handleTimeButtons() {
 	$("#selectDateTime").click(function() {
 		console.log("selectDateTime button fired");
 		showCalendar();
+	});
+}
+
+function handleFindButton() {
+	$("#find-btn").click(function() {
+		console.log("AJAX connection");
+		$.ajax({
+			type: 'POST',
+			url:  'scripts/test.php',
+			data: { username: $('input#full-name').val() }
+		}).done(function(response) {
+			/* Debug */ console.log('Connection terminated!');
+			/* Debug */ console.log('Response: ' + response);
+		});
 	});
 }
 

@@ -271,6 +271,11 @@ header ul a.actif {
 	background: url("data/images/gray triangle right.png") no-repeat;
 }
 
+#body-content fieldset select {
+        border-color:rgba(176, 25, 55, 0.6);
+        width: 100px;
+}
+
 #left-part #legend.people h3 {
 	width: 100px;
 }
@@ -282,6 +287,7 @@ header ul a.actif {
 #body-content fieldset input {
 	margin-left: 20px;
 	margin-right: 20px;
+        border-color:rgba(176, 25, 55, 0.6);
 }
 
 #body-content #find-btn {
@@ -319,8 +325,8 @@ header ul a.actif {
 	text-decoration: none;
 }
 
-/* About box & Contact box*/
-#about-box, #contact-box {
+/* About box & Contact box &How to box*/
+#about-box, #contact-box, #how to-box {
 	position: fixed;
 	top: 150px;
 	left: 50%;
@@ -339,6 +345,10 @@ header ul a.actif {
 	margin: 40px 0 20px 0;
 	font-family: 'Junction', Arial;
 	font-size: 30px;
+}
+
+#how to-box p {
+	text-indent: 25px;
 }
 
 .alert-perso-info {

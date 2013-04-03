@@ -125,11 +125,18 @@ function handleFindButton() {
 		console.log("AJAX connection");
 		$.ajax({
 			type: 'POST',
-			url:  'scripts/test.php',
-			data: { username: $('input#full-name').val() }
-		}).done(function(response) {
-			/* Debug */ console.log('Connection terminated!');
-			/* Debug */ console.log('Response: ' + response);
+			url:  'scripts/scheduleTaxi.php',
+			data: { 
+				departureTimestamp: new Date("2013-03-31 10:00:00").getTime(),
+				duration: $('input#phone-nb').val()
+			}
+		}).done(function(JSONdata) {
+			console.log('Connection terminated!');
+			var obj = JSON.parse(JSONdata);
+			if(obj.hasOwnProperty('error'))
+				console.log(obj.error);
+			else if(obj.hasOwnProperty('driverName'))
+				console.log(obj.driverName);
 		});
 	});
 }

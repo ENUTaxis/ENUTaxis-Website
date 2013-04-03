@@ -3,59 +3,130 @@
  *	scheduleTaxi.php
  *
  *	What is it for?
- *		Here a description of what does this script
+ *		Look at the 'Jobs' table in the database
+ *		to find all drivers busy between the departure
+ *		and the arrival time (received as parameters)
+ *		Then look at the 'Drivers' table to find if a
+ *		driver is available for this time slot
  *
  *	Parameters:
- *		- a list
- *		- of all parameters
- *		- that we need from the AJAX request
+ *		- departure time (milliseconds timestamp)
+ *		- journey duration in minutes
  */
 
+$debug = false;
+
+/*
+ * Create connection to the database
+ */
 include("databaseConnection.php");
 
-// SQL query to store first record where the driver is currently available
-$result = mysql_query("SELECT DriverID FROM Driver_Table WHERE Available ="Y" LIMIT 1");
+/*
+ * Needed parameters
+ */
+$departureTimestamp;
+$duration;
 
-if ($result) {
-
-	if (mysql_num_rows($content) < 1) {
-		// if a driver is availbale query against the booking table to ensure there will be no overlapping jobs
-		$booking = mysql_query("SELECT BookingTime BookingDate From Booking_Table WHERE DriverID = "$result"");
-		
-		if(mysql_num_rows($booking) != 0) {
-			// set available to true if no results from previous query; load confirm page
-			$available = true;
-		} else {
-			// query asap job google arrival time with booking time - 20 mins
-			$arrivetime = strtotime();
-			// time user has scheduled booking for
-			$scheduletime = strtotime();
-			// convert booking time string into time 
-			$bookingtime = strtotime($booking);
-			// SQL query to get time 20 minutes before bookingtime to allow driver time to get to job without any new jobs being allocated
-			$oncall = mysql_query("SELECT SUBTIME('$bookingtime','0:20:0')");
-			// check if new job doesnt over lap with booked job, if it doesn't load confirm page
-			if (strtotime($arrivetime) < $oncall) {
-				// mysql_query("INSERT INTO Job_Table ("/*fields and values in here*/")");
-				// mysql_query("UPDATE Driver_Table SET Available="N" WHERE DriverID = "$result"");
-				$available = true;
-			} else if (($arrivetime) > $oncall) {
-				// if there is over lap alert user of over lap and provide them with next available time
-				// set available to false, alert user there are no drivers available
-				$available = false;
-			}
-		}
+/*
+ * Set value of parameters
+ */
+if( isset($_POST['departureTimestamp']) && isset($_POST['duration']) ) {
+	if( is_numeric($_POST['departureTimestamp']) ) {
+		// convert timestamp from ms to seconds
+		$departureTimestamp = intval($_POST['departureTimestamp'])/1000;
 	} else {
-		// SQL query to find earliest finish time from job table if all drivers available
-		$nextfinish = mysql_query("SELECT arrivaltime FROM Jobs WHERE arrivalTime=(SELECT MAX(ArrivalTime) FROM Jobs)");
-		$nextfinishtime = strtotime("$nextfinish");
-		// add 15 minutes to finish time of job to allow driver time to get to next pickup
-		$nextpickup = mysql_query("SELECT ADDTIME('$nextfinishtime','0:15:0')")
+		$response['error'] = "Departure timestamp is not numeric";
+		echo json_encode($response);
+		exit();
 	}
+	if( is_numeric($_POST['duration']) ) {
+		$duration = intval($_POST['duration']);
+	} else {
+		$response['error'] = "Duration is not numeric";
+		echo json_encode($response);
+		exit();
+	}
+} else {
+	$response['error'] = "Missing parameters";
+	echo json_encode($response);
+	exit();
 }
-echo $available
-echo $nextpickup
 
+/*
+ * Calcul the arrival time from the departure timestamp
+ * and the duration (in minutes)
+ */
+// Departure time
+	$departureDateTime = new DateTime("@$departureTimestamp", new DateTimeZone('Europe/London'));
+	$response['departureDateTime'] = $departureDateTime->format('Y-m-d H:i:s');
+// Departure time minus 20 minutes
+	$departureDateTimeMinus20 = clone $departureDateTime;
+	$departureDateTimeMinus20->modify('-20 minutes');
+	$response['departureDateTimeMinus20'] = $departureDateTimeMinus20->format('Y-m-d H:i:s');
+// Arrival time
+	$arrivalDateTime = clone $departureDateTime;
+	$arrivalDateTime->modify('+'.$duration.' minutes');
+	$response['arrivalDateTime'] = $arrivalDateTime->format('Y-m-d H:i:s');
+// Create string type of all date/time variables for the query
+	$departureDateTimeString		= $departureDateTime->format('Y-m-d H:i:s');
+	$departureDateTimeMinus20String	= $departureDateTimeMinus20->format('Y-m-d H:i:s');
+	$arrivalDateTimeString			= $arrivalDateTime->format('Y-m-d H:i:s');
+
+// Get all drivers (DriverId) busy between the departure and the arrival time
+$query = "SELECT DriverId FROM Jobs WHERE DepartureTime <= '$arrivalDateTimeString' AND ArrivalTime >= '$departureDateTimeMinus20String'";
+
+// Execute the query
+$result = mysql_query($query);
+// Count how many lines are received
+$rows   = mysql_num_rows($result);   
+
+/*
+ * Get the list of avaible drivers (DriverId)
+ * from the list of drivers busy
+ *
+ * The query string is made depending on the
+ * number of drivers busy
+ */
+$query = "SELECT * FROM Drivers";
+$firstLoop = true;
+while($row = mysql_fetch_assoc($result)) {
+	if($firstLoop) {
+		$firstLoop = false;
+		$query .= " WHERE DriverId != '".$row['DriverId']."'";
+	} else {
+		$query .= " AND DriverId != '".$row['DriverId']."'";
+	}	
+}
+// Execute the query
+$result = mysql_query($query);
+// Count how many lines are received
+$rows   = mysql_num_rows($result);
+
+if($rows < 1) {
+	/*
+	 * No driver available
+	 * Put the error on the JSON response
+	 */
+	$response['error'] = "No driver available";
+} else {
+	/*
+	 * If, at least, one driver is available
+	 * Put information about the first available
+	 * driver on the JSON response
+	 */
+	$driver = mysql_fetch_assoc($result);
+	$response['driverName'] = $driver['DriverName'];
+}
+
+/*
+ * Encode all data in a JSON object
+ * and send it as an AJAX response
+ */
+echo json_encode($response);
+
+/*
+ * Disconnect from the database
+ */
 include("databaseDisconnection.php");
 
 ?>

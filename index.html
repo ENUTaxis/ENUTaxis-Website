@@ -1,18 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+	<meta charset="UTF-8">
 	<link rel="shortcut icon" href="./data/images/favicon.png">
 	<title>ENU Taxis</title>
 	
 	<link rel="stylesheet" type="text/css" href="./libs/bootstrap/css/bootstrap.min.css">
 	<link rel="stylesheet" type="text/css" href="./libs/bootstrap/css/bootstrap-responsive.min.css">
 	<link rel="stylesheet" type="text/css" href="./libs/jquery-ui/jquery-ui-1.10.2.custom.css">
+	<link rel="stylesheet" type="text/css" href="./libs/jquery-ui-timepicker-addon.css">
 	<link rel="stylesheet" type="text/css" href="./style.css">
 	<script type="text/javascript" 
 			src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAkl1cK5NsXK5TKnj-3RvyVvhDAsVT8QiU&sensor=false">
 	</script>
 	<script src="./libs/jquery-1.9.1.min.js"></script>
 	<script src="./libs/jquery-ui/jquery-ui-1.10.2.custom.js"></script>
+	<script src="./libs/jquery-ui-timepicker-addon.js"></script>
 	<script src="./libs/bootstrap/js/bootstrap.min.js"></script>
 	<script src="./main.js"></script>
 </head>
@@ -29,7 +32,7 @@
 					<li><a id="home-link"    href="#" class="actif">Home</a></li>
 					<li><a id="about-link"   href="#">About</a></li>
 					<li><a id="contact-link" href="#">Contact</a></li>
-                                        <li><a id="contact-link" href="#">How to</a></li>
+					<li><a id="howto-link"   href="#">How to</a></li>
 				</ul>
 			</nav>
 		</div>
@@ -67,7 +70,11 @@
 						<div class="left-gray-triangle"></div>
 					</div>
 					<input type="button" value="ASAP" id="asap"><input type="button" value="Select a Date/Time" id="selectDateTime">
-					<div id="datepicker"></div>
+					<div id="datepicker-container">
+						<div id="datepicker"></div>
+						<button id="validate-date">Validate</button>
+					</div>
+					<div id="chosenDate"></div>
 	 			</fieldset> 
 				<fieldset>
 					<div id="legend" class="people">
@@ -131,13 +138,14 @@
 		<p>If you have any problems, contact us with this address mail: </p>
 		<p id="mail-address"><a href="#" data-mailto="webmaster@enutaxis.co.uk">webmaster@enutaxis.co.uk</a></p>
 	</div>
-        
-        <!-- HOW TO BOX -->
-	<div id="how to-box" class="alert alert-perso-info">
+
+	<!-- HOW TO BOX -->
+	<div id="howto-box" class="alert alert-perso-info">
 		<button type="button" class="close">&times;</button>
 		<h2>How to</h2>
-		
 	</div>
 
+	<div id="error-box" class="alert alert-error"></div>
+	<div id="warning-box" class="alert"></div>
 </body>
 </html>

@@ -326,7 +326,7 @@ header ul a.actif {
 }
 
 /* About box & Contact box &How to box*/
-#about-box, #contact-box, #how to-box {
+#about-box, #contact-box, #howto-box, #error-box, #warning-box {
 	position: fixed;
 	top: 150px;
 	left: 50%;
@@ -336,7 +336,7 @@ header ul a.actif {
 	text-align: justify;
 }
 
-#about-box p {
+#about-box p, #howto-box p {
 	text-indent: 25px;
 }
 
@@ -347,12 +347,13 @@ header ul a.actif {
 	font-size: 30px;
 }
 
-#how to-box p {
-	text-indent: 25px;
-}
-
 .alert-perso-info {
 	color: #3a87ad;
 	background-color: #d9edf7;
 	border-color: #97B0B5;
+}
+
+/* Warning and Error box */
+#warning-box, #error-box {
+	display: none;
 }

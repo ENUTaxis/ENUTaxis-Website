@@ -3,6 +3,7 @@
  */
 	// Calendar
 	var calendarDisplayed = false;
+	var onSelectFired	  = false;
 
 	// Google Maps
 	var mapExpanded = false;
@@ -17,7 +18,7 @@
 
 	// Markers
 	var isFromMarkerSet = false;
-	var isToMarkerSet = false;
+	var isToMarkerSet   = false;
 	var fromMarker;
 	var toMarker;
 	var bounds;
@@ -25,18 +26,18 @@
 	// Locations
 	var Edinburgh;
 
+	// User information
+	var departureTime = null;
+	var duration      = null;
+
 /*
  * General JS functions
  */
 $(function() {
-	/*
-	 * Initialize the DatePicker (jQuery.ui library)
-	 */
-	$("#datepicker").datepicker().hide();
-
 	initializeTheMap();
 	handleMenuAndBoxes();
 	handleMapButton();
+	handleInitAndClickOnCalendar();
 	handleTimeButtons();
 	handleFindButton();
 	autocompleteInputFieldsUsingGeocoder();
@@ -47,13 +48,13 @@ function handleMenuAndBoxes() {
 	 * Hide all information boxes
 	 */
 	$("#about-box").hide();
+	$("#howto-box").hide();
 	$("#contact-box").hide();
 
 	/*
 	 * Close the box when the cross is clicked
 	 */
 	$('.alert .close').click(function(e) {
-		console.log(".alert .close fired");
     	$(this).parent().hide(400);
 	});
 
@@ -64,8 +65,10 @@ function handleMenuAndBoxes() {
 		console.log("home-link fired");
 		$("#contact-box").hide(400);
 		$("#about-box").hide(400);
+		$("#howto-box").hide(400);
 
 		$("#home-link").addClass("actif");
+		$("#howto-link").removeClass("actif");
 		$("#about-link").removeClass("actif");
 		$("#contact-link").removeClass("actif");
 		return false;
@@ -78,8 +81,11 @@ function handleMenuAndBoxes() {
 		console.log("about-link fired");
 		$("#contact-box").hide(400);
 		$("#about-box").show(400);
+		$("#howto-box").hide(400);
+
 
 		$("#home-link").removeClass("actif");
+		$("#howto-link").removeClass("actif");
 		$("#about-link").addClass("actif");
 		$("#contact-link").removeClass("actif");
 		return false;
@@ -92,10 +98,29 @@ function handleMenuAndBoxes() {
 		console.log("contact-link fired");
 		$("#about-box").hide(400);
 		$("#contact-box").show(400);
+		$("#howto-box").hide(400);
+
 
 		$("#home-link").removeClass("actif");
+		$("#howto-link").removeClass("actif");
 		$("#about-link").removeClass("actif");
 		$("#contact-link").addClass("actif");
+		return false;
+	});
+
+	/*
+	 * Howto-link displays howto-box
+	 */
+	$("#howto-link").click(function() {
+		console.log("howto-link fired");
+		$("#contact-box").hide(400);
+		$("#about-box").hide(400);
+		$("#howto-box").show(400);
+
+		$("#howto-link").addClass("actif");
+		$("#home-link").removeClass("actif");
+		$("#about-link").removeClass("actif");
+		$("#contact-link").removeClass("actif");
 		return false;
 	});
 
@@ -112,6 +137,12 @@ function handleMenuAndBoxes() {
 function handleTimeButtons() {
 	$("#asap").click(function() {
 		console.log("asap button fired");
+		departureTime = $.now();
+		tempDate = new Date(departureTime);
+		$('#chosenDate').html(
+			tempDate.getMonth()+1 + '/' + tempDate.getDate() + '/' + tempDate.getFullYear() + ' ' +
+			tempDate.getHours() + ':' + tempDate.getMinutes()
+			);
 		hideCalendar();
 	});
 	$("#selectDateTime").click(function() {
@@ -122,6 +153,16 @@ function handleTimeButtons() {
 
 function handleFindButton() {
 	$("#find-btn").click(function() {
+		if(departureTime == null) {
+			displayErrorBox("Departure time has not been set");
+			$.error("departure time unknown");
+			return;
+		}
+		if(duration == null) {
+			displayErrorBox("Location and destination has not been set"),
+			$.error("duration unknown");
+			return;
+		}
 		console.log("AJAX connection");
 		$.ajax({
 			type: 'POST',
@@ -133,9 +174,10 @@ function handleFindButton() {
 		}).done(function(JSONdata) {
 			console.log('Connection terminated!');
 			var obj = JSON.parse(JSONdata);
-			if(obj.hasOwnProperty('error'))
-				console.log(obj.error);
-			else if(obj.hasOwnProperty('driverName'))
+			if(obj.hasOwnProperty('error')) {
+				$.error(obj.error);
+				displayErrorBox(obj.error);
+			} else if(obj.hasOwnProperty('driverName'))
 				console.log(obj.driverName);
 		});
 	});
@@ -453,10 +495,30 @@ function fillFormFromMarkers(address, isDeparture) {
 /*
  * jQuery.ui calendar widget methods
  */
+function handleInitAndClickOnCalendar() {
+	$('#datepicker').datetimepicker({
+		onSelect: function(dateText, inst) {
+			onSelectFired = true;
+			$('#chosenDate').html(dateText);
+		},
+		showButtonPanel: false,
+	});
+	$('#datepicker-container').hide();
+	$('#validate-date').click(function() {
+		if(!onSelectFired) {
+			displayWarningBox("A date and time need to be set<br>You want to get a taxi now? Use the ASAP button");
+			return;
+		} else {
+			hideCalendar();
+			departureTime = new Date($('#datepicker').val()).valueOf();
+		}
+	});
+}
+
 function hideCalendar() {
 	if(calendarDisplayed) {
 		console.log("Hide the calendar");
-		$("#datepicker").hide(300);
+		$("#datepicker-container").hide(300);
 		calendarDisplayed = false;
 	}
 }
@@ -464,13 +526,23 @@ function hideCalendar() {
 function showCalendar() {
 	if(!calendarDisplayed) {
 		console.log("Show the calendar");
-		$("#datepicker").show(300);
+		$("#datepicker-container").show(200);
 		calendarDisplayed = true;
 	}
 }
 
-function getDate() {
-	console.log("Get the chosen date");
-	var currentDate = $("#datepicker").datepicker("getDate");
-	console.log(currentDate);
+function displayErrorBox(errorMessage) {
+	$("#error-box").html(errorMessage);
+	$("#error-box").show(100);
+	setTimeout(function() {
+		$("#error-box").hide(100);
+	}, 5000);
+}
+
+function displayWarningBox(warningMessage) {
+	$("#warning-box").html(warningMessage);
+	$("#warning-box").show(100);
+	setTimeout(function() {
+		$("#warning-box").hide(100);
+	}, 5000);
 }

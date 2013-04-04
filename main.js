@@ -1,6 +1,8 @@
 /*
  * General variables
  */
+ 	var debug = true;
+
 	// Calendar
 	var calendarDisplayed = false;
 	var onSelectFired	  = false;
@@ -27,8 +29,14 @@
 	var Edinburgh;
 
 	// User information
-	var departureTime = null;
-	var duration      = null;
+	var numberOfPeople = 1;
+	var departureTime  = null;
+	var phoneNumber    = null;
+	var matNumber      = null;
+	var duration       = null;
+	var distance       = null;
+	var fullName       = null;
+	var isAsap         = null;
 
 /*
  * General JS functions
@@ -36,6 +44,7 @@
 $(function() {
 	initializeTheMap();
 	handleMenuAndBoxes();
+	handleDropdownList();
 	handleMapButton();
 	handleInitAndClickOnCalendar();
 	handleTimeButtons();
@@ -134,45 +143,84 @@ function handleMenuAndBoxes() {
 	});
 }
 
+function handleDropdownList() {
+	$('select').change(function() {
+		numberOfPeople = $('select[name="number"] option:selected').val();
+	});
+}
+
 function handleTimeButtons() {
 	$("#asap").click(function() {
-		console.log("asap button fired");
-		departureTime = $.now();
+		isAsap = true;
+		departureTime = $.now() + 20*60*1000; // now + 20 minutes
 		tempDate = new Date(departureTime);
 		$('#chosenDate').html(
 			tempDate.getMonth()+1 + '/' + tempDate.getDate() + '/' + tempDate.getFullYear() + ' ' +
-			tempDate.getHours() + ':' + tempDate.getMinutes()
+			tempDate.getHours() + ':' + tempDate.getMinutes() + ' (in 20 minutes)'
 			);
 		hideCalendar();
 	});
 	$("#selectDateTime").click(function() {
-		console.log("selectDateTime button fired");
 		showCalendar();
 	});
 }
 
 function handleFindButton() {
 	$("#find-btn").click(function() {
+		/*
+		 * Check if all needed information are set
+		 */
+		if(!(fullName = checkName())) {
+			$.error('full name unknown');
+			return;
+		}
+		if(!(phoneNumber = checkPhoneNumber())) {
+			$.error('phone number unknown');
+			return;
+		}
+		if(!(matNumber = checkMatriculationNumber())) {
+			$.error('matriculation number unknown');
+			return;
+		}
 		if(departureTime == null) {
 			displayErrorBox("Departure time has not been set");
 			$.error("departure time unknown");
 			return;
-		}
+		}		
 		if(duration == null) {
 			displayErrorBox("Location and destination has not been set"),
 			$.error("duration unknown");
 			return;
 		}
-		console.log("AJAX connection");
+		if(distance == null) {
+			$.error("distance unknown");
+		}
+
+		if(debug) {
+			console.log('Customer full name: ' + fullName);
+			console.log('Customer phone number: ' + phoneNumber);
+			console.log('Customer matriculation number: ' + matNumber);
+			console.log('Departure time (timestamp): ' + departureTime);
+			console.log('Duration (minutes): ' + duration);
+			console.log('Distance (meters): ' + distance);
+			console.log('Is ASAP checked: ' + isAsap);
+			console.log('Number of people in the taxi: ' + numberOfPeople);
+		}
+
+		/*
+		 * Create an AJAX connection to find an available taxi
+		 */
 		$.ajax({
 			type: 'POST',
 			url:  'scripts/scheduleTaxi.php',
 			data: { 
-				departureTimestamp: new Date("2013-03-31 10:00:00").getTime(),
-				duration: $('input#phone-nb').val()
+				departureTimestamp: departureTime,
+				duration: duration,
+				numberOfPeople: numberOfPeople,
+				isAsap: isAsap
 			}
 		}).done(function(JSONdata) {
-			console.log('Connection terminated!');
+			console.log('JSON object received');
 			var obj = JSON.parse(JSONdata);
 			if(obj.hasOwnProperty('error')) {
 				$.error(obj.error);
@@ -267,7 +315,15 @@ function initializeTheMap() {
 				}
 			});
 		}
-		if(isFromMarkerSet && isToMarkerSet) drawRouteOnTheMap();
+
+		/*
+		 * When the location and destination is set
+		 * draw the route on the Map
+		 * and set the duration in minute
+		 */
+		if(isFromMarkerSet && isToMarkerSet) {
+			drawRouteOnTheMap();
+		}
 	});
 
 	/*
@@ -275,7 +331,6 @@ function initializeTheMap() {
 	 */
 	google.maps.event.addListener(directionsRenderer, 'directions_changed', function(event) {
 		console.log("Direction changed");
-		console.log(directionsRenderer.getDirections().routes);
 		var fromLocation = directionsRenderer.getDirections().routes[0].legs[0].start_location;
 		var toLocation   = directionsRenderer.getDirections().routes[0].legs[0].end_location;
 		geocoder.geocode( {'latLng': fromLocation }, function(results, status) {
@@ -284,7 +339,7 @@ function initializeTheMap() {
 				if(address != false)
 					fillFormFromMarkers(address, false);
 			} else {
-				console.log("There was an error in your request. Requeststatus: " + status);
+				$.error("There was an error in your request. Requeststatus: " + status);
 			}
 		});
 		geocoder.geocode( {'latLng': toLocation }, function(results, status) {
@@ -293,7 +348,7 @@ function initializeTheMap() {
 				if(address != false)
 					fillFormFromMarkers(address, false);
 			} else {
-				console.log("There was an error in your request. Requeststatus: " + status);
+				$.error("There was an error in your request. Requeststatus: " + status);
 			}
 		});
 	});
@@ -371,7 +426,11 @@ function enableGMapControl() {
 }
 
 function drawRouteOnTheMap() {
-	if(!isFromMarkerSet || !isToMarkerSet) return;
+	if(!isFromMarkerSet || !isToMarkerSet) {
+		$.error('location and/or destination need(s) to be set');
+		return;
+	}
+
 	var request = {
 		origin: fromMarker.getPosition(),
 		destination: toMarker.getPosition(),
@@ -385,8 +444,13 @@ function drawRouteOnTheMap() {
 			toMarker.setVisible(false);
 			directionsRenderer.setDirections(response);
 			map.fitBounds(bounds);
+			console.log(directionsRenderer.getDirections().routes[0].legs[0]);
+			distance = directionsRenderer.getDirections().routes[0].legs[0].distance.value;
+			duration = directionsRenderer.getDirections().routes[0].legs[0].duration.value;
+			duration /= 60;
+			duration = Math.round(duration);
 		} else {
-			console.log("There was an error in your request. Requeststatus: " + status);
+			$.error("There was an error in your request. Requeststatus: " + status);
 		}
 	});
 }
@@ -424,7 +488,14 @@ function autocompleteInputFieldsUsingGeocoder() {
 				map.panTo(location);
 				bounds.extend(location);
 				isFromMarkerSet = true;
-				if(isFromMarkerSet && isToMarkerSet) drawRouteOnTheMap();
+
+				/*
+				 * When the location and destination is set
+				 * draw the route on the Map
+				 * and set the duration in minute
+				 */
+				if(isFromMarkerSet && isToMarkerSet)
+					drawRouteOnTheMap();
 			}
 		}
 	});
@@ -459,7 +530,14 @@ function autocompleteInputFieldsUsingGeocoder() {
 				map.panTo(location);
 				bounds.extend(location);
 				isToMarkerSet = true;
-				if(isFromMarkerSet && isToMarkerSet) drawRouteOnTheMap();
+
+				/*
+				 * When the location and destination is set
+				 * draw the route on the Map
+				 * and set the duration in minute
+				 */
+				if(isFromMarkerSet && isToMarkerSet)
+					drawRouteOnTheMap();
 			}
 		}
 	});
@@ -509,6 +587,7 @@ function handleInitAndClickOnCalendar() {
 			displayWarningBox("A date and time need to be set<br>You want to get a taxi now? Use the ASAP button");
 			return;
 		} else {
+			isAsap = false;
 			hideCalendar();
 			departureTime = new Date($('#datepicker').val()).valueOf();
 		}
@@ -545,4 +624,42 @@ function displayWarningBox(warningMessage) {
 	setTimeout(function() {
 		$("#warning-box").hide(100);
 	}, 5000);
+}
+
+function checkName() {
+	var fullName = $('#full-name').val();
+
+	if(fullName.length > 5) {
+		if(fullName.indexOf(' ') > 0) {
+			return fullName;
+		} else {
+			displayErrorBox('Enter a correct full name');
+			return false;
+		}
+	} else {
+		displayErrorBox('Your full name is too short');
+		return false;
+	}
+}
+
+function checkMatriculationNumber() {
+	var matriculationNumber = $('#mat-nb').val();
+
+	if(matriculationNumber.length == 8 && !isNaN(matriculationNumber)) {
+		return matriculationNumber;
+	} else {
+		displayErrorBox('Enter a correct matriculation number');
+		return false;
+	}
+}
+
+function checkPhoneNumber() {
+	var phoneNumber = $('#phone-nb').val();
+
+	if(phoneNumber.length > 9 && phoneNumber.length < 12 && !isNaN(phoneNumber)) {
+		return phoneNumber;
+	} else {
+		displayErrorBox('Enter a correct phone number');
+		return false;
+	}
 }

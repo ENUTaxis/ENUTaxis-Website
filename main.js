@@ -663,3 +663,17 @@ function checkPhoneNumber() {
 		return false;
 	}
 }
+
+function displayResultView() {
+	$('#booking-view').hide('blind', 500, function() {
+		$('#find-btn').val('Edit booking');
+		$('#result-view').show('blind', 500);
+	});
+}
+
+function displayFormView() {
+	$('#result-view').hide('blind', 500, function() {
+		$('#find-btn').val('Find a taxi');
+		$('#booking-view').show('blind', 500);
+	});
+}

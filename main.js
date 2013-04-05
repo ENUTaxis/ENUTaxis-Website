@@ -30,14 +30,14 @@
 	var Edinburgh;
 
 	// User information
-	var numberOfPeople = 1;
-	var departureTime  = null;
-	var phoneNumber    = null;
-	var matNumber      = null;
-	var duration       = null;
-	var distance       = null;
-	var fullName       = null;
-	var isAsap         = null;
+	var departureTime = null;
+	var phoneNumber   = null;
+	var passengers    = 1;
+	var matNumber     = null;
+	var duration      = null;
+	var distance      = null;
+	var fullName      = null;
+	var isAsap        = null;
 
 /*
  * General JS functions
@@ -146,7 +146,7 @@ function handleMenuAndBoxes() {
 
 function handleDropdownList() {
 	$('select').change(function() {
-		numberOfPeople = $('select[name="number"] option:selected').val();
+		passengers = $('select[name="number"] option:selected').val();
 	});
 }
 
@@ -211,7 +211,7 @@ function handleFindButton() {
 				console.log('Duration (minutes): ' + duration);
 				console.log('Distance (meters): ' + distance);
 				console.log('Is ASAP checked: ' + isAsap);
-				console.log('Number of people in the taxi: ' + numberOfPeople);
+				console.log('Number of passengers in the taxi: ' + passengers);
 			}
 
 			displayResultView();
@@ -225,7 +225,7 @@ function handleFindButton() {
 				data: { 
 					departureTimestamp: departureTime,
 					duration: duration,
-					numberOfPeople: numberOfPeople,
+					passengers: passengers,
 					isAsap: isAsap
 				}
 			}).done(function(JSONdata) {
@@ -235,9 +235,12 @@ function handleFindButton() {
 					displayFormView();
 					$.error(obj.error);
 					displayErrorBox(obj.error);
-				} else if(obj.hasOwnProperty('driverName')) {
-					console.log(obj.driverName);
+				} else {
 					$('#loading-logo').hide();
+					$('#result').html('Driver name: ' + obj.driverName + 
+									  '<br>Max passengers available: ' + obj.passengers +
+									  '<br>Departure time: ' + obj.departureDateTime + 
+									  '<br>Arrival time: ' + obj.arrivalDateTime);
 				}
 			});
 		}

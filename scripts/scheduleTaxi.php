@@ -12,6 +12,8 @@
  *	Parameters:
  *		- departure time (milliseconds timestamp)
  *		- journey duration in minutes
+ *		- number of people in the taxi
+ *		- boolean if it's an As-Soon-As-Possible booking
  */
 
 $debug = false;
@@ -26,19 +28,27 @@ include("databaseConnection.php");
  */
 $departureTimestamp;
 $duration;
+$passengers;
+$isAsap;
 
 /*
  * Set value of parameters
  */
-if( isset($_POST['departureTimestamp']) && isset($_POST['duration']) ) {
+if( isset($_POST['departureTimestamp']) &&
+	isset($_POST['duration']) &&
+	isset($_POST['passengers']) &&
+	isset($_POST['isAsap'])
+  ) {
+
 	if( is_numeric($_POST['departureTimestamp']) ) {
 		// convert timestamp from ms to seconds
-		$departureTimestamp = intval($_POST['departureTimestamp'])/1000;
+		$departureTimestamp = round( intval($_POST['departureTimestamp']) / 1000 );
 	} else {
 		$response['error'] = "Departure timestamp is not numeric";
 		echo json_encode($response);
 		exit();
 	}
+
 	if( is_numeric($_POST['duration']) ) {
 		$duration = intval($_POST['duration']);
 	} else {
@@ -46,6 +56,23 @@ if( isset($_POST['departureTimestamp']) && isset($_POST['duration']) ) {
 		echo json_encode($response);
 		exit();
 	}
+
+	if( is_numeric($_POST['passengers']) ) {
+		$passengers = intval($_POST['passengers']);
+	} else {
+		$response['error'] = "Number of passengers is not numeric";
+		echo json_encode($response);
+		exit();
+	}
+
+	if( is_string($_POST['isAsap']) ) {
+		$isAsap = $_POST['isAsap'];
+	} else {
+		$response['error'] = "There is something wrong with the ASAP feature: ".$_POST['isAsap'];
+		echo json_encode($response);
+		exit();
+	}
+
 } else {
 	$response['error'] = "Missing parameters";
 	echo json_encode($response);
@@ -59,9 +86,9 @@ if( isset($_POST['departureTimestamp']) && isset($_POST['duration']) ) {
 // Departure time
 	$departureDateTime = new DateTime("@$departureTimestamp", new DateTimeZone('Europe/London'));
 	$response['departureDateTime'] = $departureDateTime->format('Y-m-d H:i:s');
-// Departure time minus 20 minutes
+// Departure time minus 20 minutes (only if not ASAP)
 	$departureDateTimeMinus20 = clone $departureDateTime;
-	$departureDateTimeMinus20->modify('-20 minutes');
+	if($isAsap === "false") $departureDateTimeMinus20->modify('-20 minutes');
 	$response['departureDateTimeMinus20'] = $departureDateTimeMinus20->format('Y-m-d H:i:s');
 // Arrival time
 	$arrivalDateTime = clone $departureDateTime;
@@ -85,7 +112,8 @@ $rows   = mysql_num_rows($result);
  * from the list of drivers busy
  *
  * The query string is made depending on the
- * number of drivers busy
+ * number of drivers busy and on the number
+ * of passengers available in the taxi
  */
 $query = "SELECT * FROM Drivers";
 $firstLoop = true;
@@ -97,6 +125,9 @@ while($row = mysql_fetch_assoc($result)) {
 		$query .= " AND DriverId != '".$row['DriverId']."'";
 	}	
 }
+if($firstLoop)  $query .= " WHERE Passengers >= '".$passengers."'";
+else 			$query .= " AND Passengers >= '".$passengers."'";
+
 // Execute the query
 $result = mysql_query($query);
 // Count how many lines are received
@@ -116,6 +147,7 @@ if($rows < 1) {
 	 */
 	$driver = mysql_fetch_assoc($result);
 	$response['driverName'] = $driver['DriverName'];
+	$response['passengers'] = $driver['Passengers'];
 }
 
 /*

@@ -147,7 +147,9 @@ if($rows < 1) {
 	 */
 	$driver = mysql_fetch_assoc($result);
 	$response['driverName'] = $driver['DriverName'];
+	$response['driverId']   = $driver['DriverId'];
 	$response['passengers'] = $driver['Passengers'];
+	$response['price']      = "4.54";
 }
 
 /*

@@ -2,6 +2,7 @@
  * General variables
  */
  	var debug = true;
+ 	var isResultViewDisplayed = false;
 
 	// Calendar
 	var calendarDisplayed = false;
@@ -168,71 +169,86 @@ function handleTimeButtons() {
 function handleFindButton() {
 	$("#find-btn").click(function() {
 		/*
-		 * Check if all needed information are set
+		 * The form view is currently displayed
+		 * Execute an AJAX communication and then
+		 * display the responce on the result view
 		 */
-		if(!(fullName = checkName())) {
-			$.error('full name unknown');
-			return;
-		}
-		if(!(phoneNumber = checkPhoneNumber())) {
-			$.error('phone number unknown');
-			return;
-		}
-		if(!(matNumber = checkMatriculationNumber())) {
-			$.error('matriculation number unknown');
-			return;
-		}
-		if(departureTime == null) {
-			displayErrorBox("Departure time has not been set");
-			$.error("departure time unknown");
-			return;
-		}		
-		if(duration == null) {
-			displayErrorBox("Location and destination has not been set"),
-			$.error("duration unknown");
-			return;
-		}
-		if(distance == null) {
-			$.error("distance unknown");
-		}
+		if(!isResultViewDisplayed) {
+			/*
+			 * Check if all needed information are set
+			 */
+			if(!(fullName = checkName())) {
+				$.error('full name unknown');
+				return;
+			}
+			if(!(phoneNumber = checkPhoneNumber())) {
+				$.error('phone number unknown');
+				return;
+			}
+			if(!(matNumber = checkMatriculationNumber())) {
+				$.error('matriculation number unknown');
+				return;
+			}
+			if(departureTime == null) {
+				displayErrorBox("Departure time has not been set");
+				$.error("departure time unknown");
+				return;
+			}		
+			if(duration == null) {
+				displayErrorBox("Location and destination has not been set"),
+				$.error("duration unknown");
+				return;
+			}
+			if(distance == null) {
+				$.error("distance unknown");
+			}
 
-		if(debug) {
-			console.log('Customer full name: ' + fullName);
-			console.log('Customer phone number: ' + phoneNumber);
-			console.log('Customer matriculation number: ' + matNumber);
-			console.log('Departure time (timestamp): ' + departureTime);
-			console.log('Duration (minutes): ' + duration);
-			console.log('Distance (meters): ' + distance);
-			console.log('Is ASAP checked: ' + isAsap);
-			console.log('Number of people in the taxi: ' + numberOfPeople);
-		}
+			if(debug) {
+				console.log('Customer full name: ' + fullName);
+				console.log('Customer phone number: ' + phoneNumber);
+				console.log('Customer matriculation number: ' + matNumber);
+				console.log('Departure time (timestamp): ' + departureTime);
+				console.log('Duration (minutes): ' + duration);
+				console.log('Distance (meters): ' + distance);
+				console.log('Is ASAP checked: ' + isAsap);
+				console.log('Number of people in the taxi: ' + numberOfPeople);
+			}
 
-		displayResultView();
+			displayResultView();
+
+			/*
+			 * Create an AJAX connection to find an available taxi
+			 */
+			$.ajax({
+				type: 'POST',
+				url:  'scripts/scheduleTaxi.php',
+				data: { 
+					departureTimestamp: departureTime,
+					duration: duration,
+					numberOfPeople: numberOfPeople,
+					isAsap: isAsap
+				}
+			}).done(function(JSONdata) {
+				console.log('JSON object received');
+				var obj = JSON.parse(JSONdata);
+				if(obj.hasOwnProperty('error')) {
+					displayFormView();
+					$.error(obj.error);
+					displayErrorBox(obj.error);
+				} else if(obj.hasOwnProperty('driverName')) {
+					console.log(obj.driverName);
+					$('#loading-logo').hide();
+				}
+			});
+		}
 
 		/*
-		 * Create an AJAX connection to find an available taxi
+		 * The result view is currently displayed
+		 * Go back to the form view
 		 */
-		$.ajax({
-			type: 'POST',
-			url:  'scripts/scheduleTaxi.php',
-			data: { 
-				departureTimestamp: departureTime,
-				duration: duration,
-				numberOfPeople: numberOfPeople,
-				isAsap: isAsap
-			}
-		}).done(function(JSONdata) {
-			console.log('JSON object received');
-			var obj = JSON.parse(JSONdata);
-			if(obj.hasOwnProperty('error')) {
-				displayFormView();
-				$.error(obj.error);
-				displayErrorBox(obj.error);
-			} else if(obj.hasOwnProperty('driverName')) {
-				console.log(obj.driverName);
-				$('#loading-logo').hide();
-			}
-		});
+		else {
+			displayFormView();
+		}
 	});
 }
 
@@ -675,9 +691,11 @@ function displayResultView() {
 		$('#find-btn').val('Edit booking');
 		$('#result-view').show('blind', 500);
 	});
+	isResultViewDisplayed = true;
 }
 
 function displayFormView() {
+	isResultViewDisplayed = false;
 	$('#result-view').hide('blind', 500, function() {
 		$('#find-btn').val('Find a taxi');
 		$('#booking-view').show('blind', 500);

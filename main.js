@@ -207,6 +207,8 @@ function handleFindButton() {
 			console.log('Number of people in the taxi: ' + numberOfPeople);
 		}
 
+		displayResultView();
+
 		/*
 		 * Create an AJAX connection to find an available taxi
 		 */
@@ -223,10 +225,13 @@ function handleFindButton() {
 			console.log('JSON object received');
 			var obj = JSON.parse(JSONdata);
 			if(obj.hasOwnProperty('error')) {
+				displayFormView();
 				$.error(obj.error);
 				displayErrorBox(obj.error);
-			} else if(obj.hasOwnProperty('driverName'))
+			} else if(obj.hasOwnProperty('driverName')) {
 				console.log(obj.driverName);
+				$('#loading-logo').hide();
+			}
 		});
 	});
 }
@@ -665,6 +670,7 @@ function checkPhoneNumber() {
 }
 
 function displayResultView() {
+	$('#loading-logo').show();
 	$('#booking-view').hide('blind', 500, function() {
 		$('#find-btn').val('Edit booking');
 		$('#result-view').show('blind', 500);

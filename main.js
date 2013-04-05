@@ -38,6 +38,16 @@
 	var distance      = null;
 	var fullName      = null;
 	var isAsap        = null;
+	var fromHouseNumber = null;
+	var fromStreetName  = null;
+	var fromPostcode    = null;
+	var destinationHouseNumber = null;
+	var destinationStreetName  = null;
+	var destinationPostcode    = null;
+	var dateTime = ;
+	var price = ;
+	var arrivalDateTime = ;
+	var driverId = ;
 
 /*
  * General JS functions
@@ -50,6 +60,7 @@ $(function() {
 	handleInitAndClickOnCalendar();
 	handleTimeButtons();
 	handleFindButton();
+	handleConfirmButton();
 	autocompleteInputFieldsUsingGeocoder();
 });
 
@@ -222,7 +233,7 @@ function handleFindButton() {
 			$.ajax({
 				type: 'POST',
 				url:  'scripts/scheduleTaxi.php',
-				data: { 
+				data: {
 					departureTimestamp: departureTime,
 					duration: duration,
 					passengers: passengers,
@@ -241,6 +252,10 @@ function handleFindButton() {
 									  '<br>Max passengers available: ' + obj.passengers +
 									  '<br>Departure time: ' + obj.departureDateTime + 
 									  '<br>Arrival time: ' + obj.arrivalDateTime);
+					price = obj.price;
+					departureTime = obj.departureDateTime;
+					arrivalDateTime = obj.arrivalDateTime;
+					driverId = obj.driverId;
 				}
 			});
 		}
@@ -251,6 +266,42 @@ function handleFindButton() {
 		 */
 		else {
 			displayFormView();
+		}
+	});
+}
+
+function handleConfirmButton() {
+	dateTime = $.now();
+	$.ajax({
+		type: 'POST',
+		url:  'scripts/confirmScheduled.php',
+		data: {
+			studentName:            fullName,
+			studentId:              matNumber,
+			studentPhone:           phoneNumber,
+			fromHouseNumber:        fromHouseNumber,
+			fromStreetName:         fromStreetName,
+			fromPostcode:           fromPostcode,
+			destinationHouseNumber: destinationHouseNumber,
+			destinationStreetName:  destinationStreetName,
+			destinationPostcode:    destinationPostcode,
+			dateTime:               dateTime,
+			price:                  price,
+			departureDateTime:      departureTime,
+			arrivalDateTime:        arrivalDateTime,
+			duration:               duration,
+			passengers:             passengers,
+			driverId:               driverId
+		}
+	}).done(function(JSONdata) {
+		console.log('JSON object received');
+		var obj = JSON.parse(JSONdata);
+		if(obj.hasOwnProperty('error')) {
+			displayFormView();
+			$.error(obj.error);
+			displayErrorBox(obj.error);
+		} else {
+			console.log("Succeed for booking");
 		}
 	});
 }
@@ -585,12 +636,18 @@ function fillFormFromMarkers(address, isDeparture) {
 
 	if(isDeparture) {
 		$("#from-house-nb").val(streetNb);
+		fromHouseNumber = streetNb;
 		$("#from-street").val(streetName);
+		fromStreetName = streetName;
 		$("#from-postcode").val(postcode);
+		fromPostcode = postcode;
 	} else {
 		$("#to-house-nb").val(streetNb);
+		destinationHouseNumber = streetNb;
 		$("#to-street").val(streetName);
+		destinationStreetName = streetName;
 		$("#to-postcode").val(postcode);
+		destinationPostcode = postcode;
 	}
 }
 

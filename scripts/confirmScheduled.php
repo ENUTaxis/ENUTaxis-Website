@@ -11,56 +11,194 @@
  *		- that we need from the AJAX request
  */
 
+$debug = false;
+
+/*
+ * Create connection to the database
+ */
 include("databaseConnection.php");
 
-// SQL query to store first record where the driver is currently available
-$result = mysql_query("SELECT DriverID FROM Driver_Table WHERE Available ="Y" LIMIT 1");
+/*
+ * Needed parameters
+ */
+$studentName;
+$studentId;
+$studentPhone;
+$fromHouseNumber;
+$fromStreetName;
+$fromPostcode;
+$destinationHouseNumber;
+$destinationStreetName;
+$destinationPostcode;
+$dateTime;
+$price;
+$departureDateTime;
+$arrivalDateTime;
+$duration;
+$passengers;
+$driverId;
 
-if ($result) {
+/*
+ * Set value of parameters
+ */
+if( isset($_POST['studentName']) &&
+	isset($_POST['studentId']) &&
+	isset($_POST['studentPhone']) &&
+	isset($_POST['fromHouseNumber']) &&
+	isset($_POST['fromStreetName']) &&
+	isset($_POST['fromPostcode']) &&
+	isset($_POST['destinationHouseNumber']) &&
+	isset($_POST['destinationStreetName']) &&
+	isset($_POST['destinationPostcode']) &&
+	isset($_POST['dateTime']) &&
+	isset($_POST['price']) &&
+	isset($_POST['departureDateTime']) &&
+	isset($_POST['arrivalDateTime']) &&
+	isset($_POST['duration']) &&
+	isset($_POST['passengers']) &&
+	isset($_POST['driverId'])
+  ) {
 
-	if (mysql_num_rows($content) < 1) {
-		// if a driver is availbale query against the booking table to ensure there will be no overlapping jobs
-		$booking = mysql_query("SELECT BookingTime BookingDate From Booking_Table WHERE DriverID = "$result"");
-		
-		if(mysql_num_rows($booking)!=0) {
-			// set available to true if no results from previous query; load confirm page
-			$available = true;
-			$email = "matNB"+"@live.napier.ac.uk";
-			mysql_query("INSERT INTO Job_Table ("/*fields and values in here*/")");
-			mysql_query("UPDATE Driver_Table SET Available="N" WHERE DriverID = "$result"");
-		} else {
-			// query asap job google arrival time with booking time - 20 mins
-
-			// convert time strings to time 
-			// google estimated time of arrival for new job
-			$arrivetime = strtotime();
-			// time/date the user has scheduled for
-			// concatenate strings into one for time and date
-			$scheduletime = strtotime();
-			// time of booking driver is already allocated to
-			$bookingtime = strtotime($booking);
-			// time booked job is due to finish
-			$bookingfinish = mysql_query("SELECT finishtime FROM Job_Table WHERE Job_Table.JobID = Booking_Table.JobID");
-			// SQL query to get time 20 minutes before bookingtime to allow driver time to get to job without any new jobs being allocated
-			$oncall = mysql_query("SELECT SUBTIME('$bookingtime','0:20:0')");
-			// if there is overlap alert user of over lap and provide them with next available time
-			if (($scheduletime <= $bookingfinish) && ($oncall <= $arrivetime)) {
-				// set available to false and alert user that this slot has been taken between the time finding and confirming
-				$available = false;
-			} else {
-				// check if new job doesnt over lap with booked job, if it doesn't insert to and update database
-				$available = true;
-				$email = "matNB"+"@live.napier.ac.uk";
-				mysql_query("INSERT INTO Job_Table ("/*fields and values in here*/")");
-				mysql_query("UPDATE Driver_Table SET Available="N" WHERE DriverID = "$result"");
-			}
-		}
+  	if( is_string($_POST['studentName']) ) {
+		$studentName = $_POST['studentName']);
 	} else {
-		// reload find page with values still stored in input boxes.
+		$response['error'] = "Student name is not a correct string";
+		echo json_encode($response);
+		exit();
 	}
+
+	if( is_numeric($_POST['studentId']) ) {
+		$studentId = intval($_POST['studentId']);
+	} else {
+		$response['error'] = "Matriculation number is not numeric";
+		echo json_encode($response);
+		exit();
+	}
+
+	if( is_numeric($_POST['studentPhone']) ) {
+		$studentPhone = intval($_POST['studentPhone']);
+	} else {
+		$response['error'] = "Student phone number is not numeric";
+		echo json_encode($response);
+		exit();
+	}
+
+	if( is_numeric($_POST['fromHouseNumber']) ) {
+		$fromHouseNumber = intval($_POST['fromHouseNumber']);
+	} else {
+		$response['error'] = "The location house number is not numeric";
+		echo json_encode($response);
+		exit();
+	}
+
+	if( is_string($_POST['fromStreetName']) ) {
+		$fromStreetName = $_POST['fromStreetName']);
+	} else {
+		$response['error'] = "The location street name is not a correct string";
+		echo json_encode($response);
+		exit();
+	}
+
+	if( is_string($_POST['fromPostcode']) ) {
+		$fromPostcode = $_POST['fromPostcode']);
+	} else {
+		$response['error'] = "The location postcode is not a correct string";
+		echo json_encode($response);
+		exit();
+	}
+
+	if( is_numeric($_POST['destinationHouseNumber']) ) {
+		$destinationHouseNumber = intval($_POST['destinationHouseNumber']);
+	} else {
+		$response['error'] = "The destination house number is not numeric";
+		echo json_encode($response);
+		exit();
+	}
+
+	if( is_string($_POST['destinationStreetName']) ) {
+		$destinationStreetName = $_POST['destinationStreetName']);
+	} else {
+		$response['error'] = "The destination street name is not a correct string";
+		echo json_encode($response);
+		exit();
+	}
+
+	if( is_string($_POST['destinationPostcode']) ) {
+		$destinationPostcode = $_POST['destinationPostcode']);
+	} else {
+		$response['error'] = "The destination postcode is not a correct string";
+		echo json_encode($response);
+		exit();
+	}
+
+	if( is_numeric($_POST['dateTime']) ) {
+		// convert timestamp from ms to seconds
+		$dateTime = round( intval($_POST['dateTime']) / 1000 );
+	} else {
+		$response['error'] = "The timestamp of the booking is not numeric";
+		echo json_encode($response);
+		exit();
+	}
+
+	if( is_numeric($_POST['price']) ) {
+		$price = intval($_POST['price']);
+	} else {
+		$response['error'] = "The price is not numeric";
+		echo json_encode($response);
+		exit();
+	}
+
+	if( is_numeric($_POST['departureDateTime']) ) {
+		// convert timestamp from ms to seconds
+		$departureDateTime = round( intval($_POST['departureDateTime']) / 1000 );
+	} else {
+		$response['error'] = "The timestamp of the departure is not numeric";
+		echo json_encode($response);
+		exit();
+	}
+
+	if( is_numeric($_POST['arrivalDateTime']) ) {
+		// convert timestamp from ms to seconds
+		$arrivalDateTime = round( intval($_POST['arrivalDateTime']) / 1000 );
+	} else {
+		$response['error'] = "The timestamp of the arrival is not numeric";
+		echo json_encode($response);
+		exit();
+	}
+
+	if( is_numeric($_POST['duration']) ) {
+		$duration = intval($_POST['duration']);
+	} else {
+		$response['error'] = "The duration is not numeric";
+		echo json_encode($response);
+		exit();
+	}
+
+	if( is_numeric($_POST['passengers']) ) {
+		$passengers = intval($_POST['passengers']);
+	} else {
+		$response['error'] = "Number of passengers is not numeric";
+		echo json_encode($response);
+		exit();
+	}
+
+	if( is_numeric($_POST['driverId']) ) {
+		$driverId = intval($_POST['driverId']);
+	} else {
+		$response['error'] = "The driver ID is not numeric";
+		echo json_encode($response);
+		exit();
+	}
+
+} else {
+	$response['error'] = "Missing parameters";
+	echo json_encode($response);
+	exit();
 }
-echo $available
-echo $nextpickup
+
+// $email = "matNB"+"@live.napier.ac.uk";
+// mysql_query("INSERT INTO Job_Table ("/*fields and values in here*/")");
+// mysql_query("UPDATE Driver_Table SET Available="N" WHERE DriverID = "$result"");
 
 include("databaseDisconnection.php");
 

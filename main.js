@@ -30,24 +30,22 @@
 	var Edinburgh;
 
 	// User information
-	var departureTime = null;
-	var phoneNumber   = null;
-	var passengers    = 1;
-	var matNumber     = null;
-	var duration      = null;
-	var distance      = null;
-	var fullName      = null;
-	var isAsap        = null;
-	var fromHouseNumber = null;
-	var fromStreetName  = null;
-	var fromPostcode    = null;
-	var destinationHouseNumber = null;
-	var destinationStreetName  = null;
-	var destinationPostcode    = null;
-	var dateTime = ;
-	var price = ;
-	var arrivalDateTime = ;
-	var driverId = ;
+	
+	
+	var destinationAddress = null;
+	var fromAddress        = null;
+	var arrivalDateTime    = null;
+	var departureTime      = null;
+	var phoneNumber        = null;
+	var passengers      = 1;
+	var matNumber       = null;
+	var duration        = null;
+	var distance        = null;
+	var fullName        = null;
+	var dateTime        = null;
+	var driverId        = null;
+	var isAsap          = null;
+	var price           = null;
 
 /*
  * General JS functions
@@ -253,8 +251,9 @@ function handleFindButton() {
 									  '<br>Departure time: ' + obj.departureDateTime + 
 									  '<br>Arrival time: ' + obj.arrivalDateTime);
 					price = obj.price;
-					departureTime = obj.departureDateTime;
-					arrivalDateTime = obj.arrivalDateTime;
+					// Convert from String to Timestamp
+					departureTime = new Date(obj.departureDateTime).valueOf(); 
+					arrivalDateTime = new Date(obj.arrivalDateTime).valueOf();
 					driverId = obj.driverId;
 				}
 			});
@@ -271,38 +270,41 @@ function handleFindButton() {
 }
 
 function handleConfirmButton() {
-	dateTime = $.now();
-	$.ajax({
-		type: 'POST',
-		url:  'scripts/confirmScheduled.php',
-		data: {
-			studentName:            fullName,
-			studentId:              matNumber,
-			studentPhone:           phoneNumber,
-			fromHouseNumber:        fromHouseNumber,
-			fromStreetName:         fromStreetName,
-			fromPostcode:           fromPostcode,
-			destinationHouseNumber: destinationHouseNumber,
-			destinationStreetName:  destinationStreetName,
-			destinationPostcode:    destinationPostcode,
-			dateTime:               dateTime,
-			price:                  price,
-			departureDateTime:      departureTime,
-			arrivalDateTime:        arrivalDateTime,
-			duration:               duration,
-			passengers:             passengers,
-			driverId:               driverId
-		}
-	}).done(function(JSONdata) {
-		console.log('JSON object received');
-		var obj = JSON.parse(JSONdata);
-		if(obj.hasOwnProperty('error')) {
-			displayFormView();
-			$.error(obj.error);
-			displayErrorBox(obj.error);
-		} else {
-			console.log("Succeed for booking");
-		}
+	$('#confirm-btn').click(function() {
+		dateTime = $.now();
+		$.ajax({
+			type: 'POST',
+			url:  'scripts/confirmScheduled.php',
+			data: {
+				studentName:        fullName,
+				studentId:          matNumber,
+				studentPhone:       phoneNumber,
+				fromAddress:        fromAddress,
+				destinationAddress: destinationAddress,
+				dateTime:           dateTime,
+				price:              price,
+				departureDateTime:  departureTime,
+				arrivalDateTime:    arrivalDateTime,
+				duration:           duration,
+				passengers:         passengers,
+				driverId:           driverId
+			}
+		}).done(function(JSONdata) {
+			console.log('JSON object received');
+			var obj = JSON.parse(JSONdata);
+			if(obj.hasOwnProperty('error')) {
+				displayFormView();
+				$.error(obj.error);
+				displayErrorBox(obj.error);
+			} else {
+				if(obj.ok == false) {
+					$.error(obj.mysqlError);
+				} else {
+					console.log("Succeed for booking");
+					console.log(obj);
+				}
+			}
+		});
 	});
 }
 
@@ -412,7 +414,7 @@ function initializeTheMap() {
 			if (status == google.maps.GeocoderStatus.OK) {
 				var address = selectStreetAddress(results);
 				if(address != false)
-					fillFormFromMarkers(address, false);
+					fillFormFromMarkers(address, true);
 			} else {
 				$.error("There was an error in your request. Requeststatus: " + status);
 			}
@@ -635,19 +637,15 @@ function fillFormFromMarkers(address, isDeparture) {
 	var postcode   = address.address_components[5].long_name;
 
 	if(isDeparture) {
-		$("#from-house-nb").val(streetNb);
-		fromHouseNumber = streetNb;
+		fromAddress = address.formatted_address;
+		$("#from-house-nb").val(streetNb);		
 		$("#from-street").val(streetName);
-		fromStreetName = streetName;
 		$("#from-postcode").val(postcode);
-		fromPostcode = postcode;
 	} else {
+		destinationAddress = address.formatted_address;
 		$("#to-house-nb").val(streetNb);
-		destinationHouseNumber = streetNb;
 		$("#to-street").val(streetName);
-		destinationStreetName = streetName;
 		$("#to-postcode").val(postcode);
-		destinationPostcode = postcode;
 	}
 }
 

@@ -24,12 +24,8 @@ include("databaseConnection.php");
 $studentName;
 $studentId;
 $studentPhone;
-$fromHouseNumber;
-$fromStreetName;
-$fromPostcode;
-$destinationHouseNumber;
-$destinationStreetName;
-$destinationPostcode;
+$fromAddress;
+$destinationAddress;
 $dateTime;
 $price;
 $departureDateTime;
@@ -44,12 +40,8 @@ $driverId;
 if( isset($_POST['studentName']) &&
 	isset($_POST['studentId']) &&
 	isset($_POST['studentPhone']) &&
-	isset($_POST['fromHouseNumber']) &&
-	isset($_POST['fromStreetName']) &&
-	isset($_POST['fromPostcode']) &&
-	isset($_POST['destinationHouseNumber']) &&
-	isset($_POST['destinationStreetName']) &&
-	isset($_POST['destinationPostcode']) &&
+	isset($_POST['fromAddress']) &&
+	isset($_POST['destinationAddress']) &&
 	isset($_POST['dateTime']) &&
 	isset($_POST['price']) &&
 	isset($_POST['departureDateTime']) &&
@@ -60,7 +52,7 @@ if( isset($_POST['studentName']) &&
   ) {
 
   	if( is_string($_POST['studentName']) ) {
-		$studentName = $_POST['studentName']);
+		$studentName = $_POST['studentName'];
 	} else {
 		$response['error'] = "Student name is not a correct string";
 		echo json_encode($response);
@@ -83,50 +75,18 @@ if( isset($_POST['studentName']) &&
 		exit();
 	}
 
-	if( is_numeric($_POST['fromHouseNumber']) ) {
-		$fromHouseNumber = intval($_POST['fromHouseNumber']);
+	if( is_string($_POST['fromAddress']) ) {
+		$fromAddress = $_POST['fromAddress'];
 	} else {
-		$response['error'] = "The location house number is not numeric";
+		$response['error'] = "The location address is not a correct string";
 		echo json_encode($response);
 		exit();
 	}
 
-	if( is_string($_POST['fromStreetName']) ) {
-		$fromStreetName = $_POST['fromStreetName']);
+	if( is_string($_POST['destinationAddress']) ) {
+		$destinationAddress = $_POST['destinationAddress'];
 	} else {
-		$response['error'] = "The location street name is not a correct string";
-		echo json_encode($response);
-		exit();
-	}
-
-	if( is_string($_POST['fromPostcode']) ) {
-		$fromPostcode = $_POST['fromPostcode']);
-	} else {
-		$response['error'] = "The location postcode is not a correct string";
-		echo json_encode($response);
-		exit();
-	}
-
-	if( is_numeric($_POST['destinationHouseNumber']) ) {
-		$destinationHouseNumber = intval($_POST['destinationHouseNumber']);
-	} else {
-		$response['error'] = "The destination house number is not numeric";
-		echo json_encode($response);
-		exit();
-	}
-
-	if( is_string($_POST['destinationStreetName']) ) {
-		$destinationStreetName = $_POST['destinationStreetName']);
-	} else {
-		$response['error'] = "The destination street name is not a correct string";
-		echo json_encode($response);
-		exit();
-	}
-
-	if( is_string($_POST['destinationPostcode']) ) {
-		$destinationPostcode = $_POST['destinationPostcode']);
-	} else {
-		$response['error'] = "The destination postcode is not a correct string";
+		$response['error'] = "The destination address is not a correct string";
 		echo json_encode($response);
 		exit();
 	}
@@ -134,6 +94,8 @@ if( isset($_POST['studentName']) &&
 	if( is_numeric($_POST['dateTime']) ) {
 		// convert timestamp from ms to seconds
 		$dateTime = round( intval($_POST['dateTime']) / 1000 );
+		$dateTime = new DateTime("@$dateTime", new DateTimeZone('Europe/London'));
+		$dateTimeString = $dateTime->format('Y-m-d H:i:s');
 	} else {
 		$response['error'] = "The timestamp of the booking is not numeric";
 		echo json_encode($response);
@@ -151,6 +113,8 @@ if( isset($_POST['studentName']) &&
 	if( is_numeric($_POST['departureDateTime']) ) {
 		// convert timestamp from ms to seconds
 		$departureDateTime = round( intval($_POST['departureDateTime']) / 1000 );
+		$departureDateTime = new DateTime("@$departureDateTime", new DateTimeZone('Europe/London'));
+		$departureDateTimeString = $departureDateTime->format('Y-m-d H:i:s');
 	} else {
 		$response['error'] = "The timestamp of the departure is not numeric";
 		echo json_encode($response);
@@ -160,6 +124,8 @@ if( isset($_POST['studentName']) &&
 	if( is_numeric($_POST['arrivalDateTime']) ) {
 		// convert timestamp from ms to seconds
 		$arrivalDateTime = round( intval($_POST['arrivalDateTime']) / 1000 );
+		$arrivalDateTime = new DateTime("@$arrivalDateTime", new DateTimeZone('Europe/London'));
+		$arrivalDateTimeString = $arrivalDateTime->format('Y-m-d H:i:s');
 	} else {
 		$response['error'] = "The timestamp of the arrival is not numeric";
 		echo json_encode($response);
@@ -196,10 +162,56 @@ if( isset($_POST['studentName']) &&
 	exit();
 }
 
-// $email = "matNB"+"@live.napier.ac.uk";
-// mysql_query("INSERT INTO Job_Table ("/*fields and values in here*/")");
-// mysql_query("UPDATE Driver_Table SET Available="N" WHERE DriverID = "$result"");
+$studentEmail = $studentId."@live.napier.ac.uk";
 
+$query = "INSERT INTO Jobs (StudentName, StudentPhone, StudentID, StudentEmail, NumberOfPassengers, FromAddress, ".
+		 "DestinationAddress, Price, Duration, DriverId, ArrivalTime, DepartureTime, DateTime) VALUES (".
+			"'".$studentName."', ".
+			"'".$studentPhone."', ".
+			"'".$studentId."', ".
+			"'".$studentEmail."', ".
+			"'".$passengers."', ".
+			"'".$fromAddress."', ".
+			"'".$destinationAddress."', ".
+			"'".$price."', ".
+			"'".$duration."', ".
+			"'".$driverId."', ".
+			"'".$arrivalDateTimeString."', ".
+			"'".$departureDateTimeString."', ".
+			"'".$dateTimeString."')";
+// Execute the query
+if($debug) {
+	$response['studentName'] = $studentName;
+	$response['studentPhone'] = $studentPhone;
+	$response['studentId'] = $studentId;
+	$response['studentEmail'] = $studentEmail;
+	$response['passengers'] = $passengers;
+	$response['fromAddress'] = $fromAddress;
+	$response['destinationAddress'] = $destinationAddress;
+	$response['price'] = $price;
+	$response['duration'] = $duration;
+	$response['driverId'] = $driverId;
+	$response['arrivalDateTime'] = $arrivalDateTime;
+	$response['departureDateTime'] = $departureDateTime;
+	$response['dateTime'] = $dateTime;
+	$response['query'] = $query;
+}
+
+$response['ok'] = true;
+if(!mysql_query($query)) {
+	$response['ok'] = false;
+	$response['mysqlError'] = mysql_error();
+}
+
+/*
+ * Encode all data in a JSON object
+ * and send it as an AJAX response
+ */
+echo json_encode($response);
+
+/*
+ * Disconnect from the database
+ */
 include("databaseDisconnection.php");
 
 ?>

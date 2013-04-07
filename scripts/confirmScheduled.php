@@ -3,12 +3,25 @@
  *	confirmScheduled.php
  *
  *	What is it for?
- *		Here a description of what does this script
+ *		Receive all information about the booking from
+ *		an AJAX communication and then, put these values
+ *		in the database. 
+ *		When the new row is in the database, the booking
+ *		is confirmed. 
  *
  *	Parameters:
- *		- a list
- *		- of all parameters
- *		- that we need from the AJAX request
+ *		- student name (string)
+ *		- student phone (numeric)
+ *		- student matriculation number (numeric)
+ *		- location address (string)
+ *		- destination address (string)
+ *		- date/time when the user clicked on the confirm button (numeric timestamp)
+ *		- price (numeric)
+ *		- departure date/time (numeric timestamp)
+ *		- arrival date/time (numeric timestamp)
+ *		- duration in minutes (numeric)
+ *		- number of passengers (numeric)
+ *		- the ID of the driver (numeric)
  */
 
 $debug = false;

@@ -348,8 +348,9 @@ header ul a.actif {
 	text-decoration: none;
 }
 
-/* About box & Contact box &How to box*/
-#about-box, #contact-box, #howto-box, #error-box, #warning-box {
+/* About box,Contact box, How-to box & Bookings box*/
+#about-box, #contact-box, #howto-box, 
+#booking-box, #error-box, #warning-box {
 	position: fixed;
 	top: 150px;
 	left: 50%;
@@ -357,6 +358,11 @@ header ul a.actif {
 	z-index: 1000;
 	width: 600px;
 	text-align: justify;
+}
+
+#booking-box {
+	width: 800px;
+	margin-left: -425px;
 }
 
 #about-box p, #howto-box p {
@@ -379,4 +385,18 @@ header ul a.actif {
 /* Warning and Error box */
 #warning-box, #error-box {
 	display: none;
+}
+
+/*
+ * What's inside the "My Bookings" box
+ */
+#my-bookings-form {
+	width: 100%;
+	text-align: center;
+	margin-right: auto;
+	margin-left: auto;
+}
+
+#my-bookings-form p {
+	font-size: 14px;
 }

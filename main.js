@@ -66,9 +66,10 @@ function handleMenuAndBoxes() {
 	/*
 	 * Hide all information boxes
 	 */
-	$("#about-box").hide();
-	$("#howto-box").hide();
-	$("#contact-box").hide();
+	$('#howto-box').hide();
+	$('#about-box').hide();
+	$('#booking-box').hide();
+	$('#contact-box').hide();
 
 	/*
 	 * Close the box when the cross is clicked
@@ -80,76 +81,160 @@ function handleMenuAndBoxes() {
 	/*
 	 * Home-link hides all boxes
 	 */
-	$("#home-link").click(function() {
-		console.log("home-link fired");
-		$("#contact-box").hide(400);
-		$("#about-box").hide(400);
-		$("#howto-box").hide(400);
+	$('#home-link').click(function() {
+		$('#howto-box').hide(400);
+		$('#about-box').hide(400);
+		$('#booking-box').hide(400);
+		$('#contact-box').hide(400);
 
-		$("#home-link").addClass("actif");
-		$("#howto-link").removeClass("actif");
-		$("#about-link").removeClass("actif");
-		$("#contact-link").removeClass("actif");
+		$('#howto-link').removeClass("actif");
+		$('#about-link').removeClass("actif");
+		$('#booking-link').removeClass("actif");
+		$('#contact-link').removeClass("actif");
+
+		$('#home-link').addClass("actif");
+
 		return false;
 	});
 
 	/*
 	 * About-link displays about-box
 	 */
-	$("#about-link").click(function() {
-		console.log("about-link fired");
-		$("#contact-box").hide(400);
-		$("#about-box").show(400);
-		$("#howto-box").hide(400);
+	$('#about-link').click(function() {
+		$('#howto-box').hide(400);
+		$('#booking-box').hide(400);
+		$('#contact-box').hide(400);
 
+		$('#about-box').show(400);
 
-		$("#home-link").removeClass("actif");
-		$("#howto-link").removeClass("actif");
-		$("#about-link").addClass("actif");
-		$("#contact-link").removeClass("actif");
+		$('#home-link').removeClass("actif");
+		$('#howto-link').removeClass("actif");
+		$('#booking-link').removeClass("actif");
+		$('#contact-link').removeClass("actif");
+
+		$('#about-link').addClass("actif");
+
 		return false;
 	});
 
 	/*
 	 * Contact-link displays contact-box
 	 */
-	$("#contact-link").click(function() {
-		console.log("contact-link fired");
-		$("#about-box").hide(400);
-		$("#contact-box").show(400);
-		$("#howto-box").hide(400);
+	$('#contact-link').click(function() {
+		$('#howto-box').hide(400);
+		$('#about-box').hide(400);
+		$('#booking-box').hide(400);
 
+		$('#contact-box').show(400);
 
-		$("#home-link").removeClass("actif");
-		$("#howto-link").removeClass("actif");
-		$("#about-link").removeClass("actif");
-		$("#contact-link").addClass("actif");
+		$('#home-link').removeClass("actif");
+		$('#howto-link').removeClass("actif");
+		$('#about-link').removeClass("actif");
+		$('#booking-link').removeClass("actif");
+
+		$('#contact-link').addClass("actif");
+
 		return false;
 	});
 
 	/*
 	 * Howto-link displays howto-box
 	 */
-	$("#howto-link").click(function() {
-		console.log("howto-link fired");
-		$("#contact-box").hide(400);
-		$("#about-box").hide(400);
-		$("#howto-box").show(400);
+	$('#howto-link').click(function() {
+		$('#about-box').hide(400);
+		$('#booking-box').hide(400);
+		$('#contact-box').hide(400);
 
-		$("#howto-link").addClass("actif");
-		$("#home-link").removeClass("actif");
-		$("#about-link").removeClass("actif");
-		$("#contact-link").removeClass("actif");
+		$('#howto-box').show(400);
+
+		$('#home-link').removeClass("actif");
+		$('#about-link').removeClass("actif");
+		$('#contact-link').removeClass("actif");
+		$('#booking-link').removeClass("actif");
+
+		$('#howto-link').addClass("actif");
+		
 		return false;
 	});
 
 	/*
-	 * Click on the address mail opens a new window
+	 * Booking-link displays booking-box
+	 */
+	$('#booking-link').click(function() {
+		$('#about-box').hide(400);
+		$('#howto-box').hide(400);
+		$('#contact-box').hide(400);
+
+		$('#booking-box').show(400);
+
+		$('#home-link').removeClass("actif");
+		$('#about-link').removeClass("actif");
+		$('#howto-link').removeClass("actif");
+		$('#contact-link').removeClass("actif");
+
+		$('#booking-link').addClass("actif");
+
+		$('#matriculation-number').focus();
+		
+		return false;
+	});
+
+	/*
+	 * A click on the address mail opens a new window
 	 */
 	$("a[data-mailto]").click(function(){
 		var link = 'mailto:' + $(this).data('mailto');
 		window.open(link, 'Mailer');
 		return false;
+	});
+
+	/*
+	 * A click on the "Find my Bookings" executes an
+	 * AJAX communication to get the bookings of the
+	 * corresponding matriculation number
+	 */
+	$('#bookings-btn').click(function() {
+		var matriculationNumber = $('#matriculation-number').val();
+
+		if(matriculationNumber.length == 8 && !isNaN(matriculationNumber)) {
+			$.ajax({
+				type: 'POST',
+				url:  'scripts/findScheduledTaxi.php',
+				data: { matriculationNumber: matriculationNumber }
+			}).done(function(JSONdata) {
+				console.log('JSON object received');
+				var obj = JSON.parse(JSONdata);
+				if(obj.hasOwnProperty('error')) {
+					displayFormView();
+					$.error(obj.error);
+					displayErrorBox(obj.error);
+				} else {
+					$('#my-bookings-form').hide();
+					$('#bookings-result').html(
+						'<p>' +
+							'Hi <b>' + obj.studentName + '</b><br>' +
+							'Your matriculation number is <b>' + obj.matriculationNumber + '</b>' +
+						'</p>');
+					for(var i = 0; i < obj.rows; i++) {
+						var depAdr = obj['row' + i].FromAddress.toString().split(',')[0] + 
+									 obj['row' + i].FromAddress.toString().split(',')[1];
+						var arrAdr = obj['row' + i].DestinationAddress.toString().split(',')[0] + 
+									 obj['row' + i].DestinationAddress.toString().split(',')[1];
+						$('#bookings-list tbody').append(
+							'<tr>' + 
+								'<td>' + obj['row' + i].DepartureTime + '</td>' + 
+								'<td>' + obj['row' + i].ArrivalTime + '</td>' + 
+								'<td>' + depAdr + '</td>' +
+								'<td>' + arrAdr + '</td>' +
+								'<td>' + obj['row' + i].Duration + '</td>' +
+							'</tr>');
+					}
+				}
+			});
+		} else {
+			displayErrorBox('Enter a correct matriculation number');
+			return false;
+		}
 	});
 }
 

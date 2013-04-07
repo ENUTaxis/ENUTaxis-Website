@@ -322,6 +322,10 @@ header ul a.actif {
         background-color:rgba(176, 25, 55, 0.6);
 }
 
+#body-content #find-btn:active {
+        background:bottom;
+}
+
 
 #body-content footer{
   margin: 70px auto 20px 20px;

@@ -105,7 +105,7 @@ $query = "SELECT DriverId FROM Jobs WHERE DepartureTime <= '$arrivalDateTimeStri
 // Execute the query
 $result = mysql_query($query);
 // Count how many lines are received
-$rows   = mysql_num_rows($result);   
+$rows   = mysql_num_rows($result);
 
 /*
  * Get the list of avaible drivers (DriverId)

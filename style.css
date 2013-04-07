@@ -49,16 +49,24 @@ header #header-content {
 	margin: 0 auto;
 }
 
+header #Taxi-logo {
+	position: absolute;
+	left: -20px;
+	top: 25px;
+        width:70px;
+        height:66px;
+}
+
 header h1 {
 	position: absolute;
 	top: 20px;
-	left: 0;
+	left: 60px;
 	color: #FFF;
 	font-size: 44px;
 	font-family: "Existence", Arial;
 }
 
-header img {
+header #Napier-University-logo {
 	position: absolute;
 	right: -20px;
 	top: 25px;

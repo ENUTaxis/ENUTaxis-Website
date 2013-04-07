@@ -24,10 +24,9 @@
 	<!-- HEADER -->
 	<header>
 		<div id="header-content">
-                        <img id="Taxi-logo" src="./data/images/logo.png" alt="Taxi logo">
+			<img id="Taxi-logo" src="./data/images/logo.png" alt="ENU Taxi logo">
 			<h1>ENU Taxis</h1>
 			<img id="Napier-University-logo" src="./data/images/white_napier_logo.png" alt="Napier University logo">
-
 			<nav>
 				<ul>
 					<li><a id="home-link"    href="#" class="actif">Home</a></li>
@@ -71,7 +70,7 @@
 						<h3>Departure time</h3>
 						<div class="left-gray-triangle"></div>
 					</div>
-					<div class="input-prepend input-append">
+					<div id="time-btns" class="input-prepend input-append">
 						<input type="button" class="btn" value="ASAP" id="asap">
 						<input type="button" class="btn" value="Select a Date/Time" id="selectDateTime">
 					</div>
@@ -128,17 +127,16 @@
 		<!-- RESULT VIEW -->
 		<div id="result-view" style="display: none;">
 			<img id="loading-logo" src="./data/images/ajax-loader.gif" />
-			<h1 style="text-align: center">Awesome debug message</h1>
+			<h2>Taxi found! Do you want to book this one?</h2>
 			<p id="result"></p>
 			<input type="button" value="Confirm booking" id="confirm-btn">
 		</div>
-	
-               <!-- Create Creative Common -->
-               <footer>
-               <a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.en_GB"><img alt="Creative Commons Licence" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-nd/3.0/88x31.png" /></a><br /><span xmlns:dct="http://purl.org/dc/terms/" property="dct:title">ENU Taxis</span> by <a xmlns:cc="http://creativecommons.org/ns#" href="http://david.guyon.me" property="cc:attributionName" rel="cc:attributionURL">David Guyon and his group</a> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.en_GB">Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License</a>.<br />Based on a work at <a xmlns:dct="http://purl.org/dc/terms/" href="http://davidguyon.olympe.in" rel="dct:source">http://davidguyon.olympe.in</a>
-               </footer>
+	</div>
 
-               </div>
+	<!-- Creative Commons -->
+	<footer>
+		<a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.en_GB"><img alt="Creative Commons Licence" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-nd/3.0/88x31.png" /></a><br /><span xmlns:dct="http://purl.org/dc/terms/" property="dct:title">ENU Taxis</span> by <a xmlns:cc="http://creativecommons.org/ns#" href="http://david.guyon.me" property="cc:attributionName" rel="cc:attributionURL">David Guyon and his group</a> is licensed under a <br><a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.en_GB">Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License</a>.<br />Based on a work at <a xmlns:dct="http://purl.org/dc/terms/" href="http://davidguyon.olympe.in" rel="dct:source">http://davidguyon.olympe.in</a>
+	</footer>
 
 	<!-- ABOUT BOX -->
 	<div id="about-box" class="alert alert-perso-info">

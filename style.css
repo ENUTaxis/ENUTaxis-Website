@@ -318,6 +318,10 @@ header ul a.actif {
          -o-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 1px rgba(0, 0, 0, 0.2);
     		box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 1px rgba(0, 0, 0, 0.2);
 }
+#body-content #find-btn:hover {
+        background-color:rgba(176, 25, 55, 0.6);
+}
+
 
 #body-content footer{
   margin: 70px auto 20px 20px;

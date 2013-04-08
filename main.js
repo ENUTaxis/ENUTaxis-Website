@@ -64,6 +64,11 @@ $(function() {
 
 function handleMenuAndBoxes() {
 	/*
+	 * Hide table in Bookings list
+	 */
+	$('#my-bookings-result').hide();
+
+	/*
 	 * Hide all information boxes
 	 */
 	$('#howto-box').hide();
@@ -210,11 +215,10 @@ function handleMenuAndBoxes() {
 					displayErrorBox(obj.error);
 				} else {
 					$('#my-bookings-form').hide();
-					$('#bookings-result').html(
-						'<p>' +
-							'Hi <b>' + obj.studentName + '</b><br>' +
-							'Your matriculation number is <b>' + obj.matriculationNumber + '</b>' +
-						'</p>');
+					$('#my-bookings-result').show();
+					$('#my-bookings-result p').html(
+						'Hi <b>' + obj.studentName + '</b><br>' +
+						'Your matriculation number is <b>' + obj.matriculationNumber + '</b>');
 					for(var i = 0; i < obj.rows; i++) {
 						var depAdr = obj['row' + i].FromAddress.toString().split(',')[0] + 
 									 obj['row' + i].FromAddress.toString().split(',')[1];
@@ -227,8 +231,17 @@ function handleMenuAndBoxes() {
 								'<td>' + depAdr + '</td>' +
 								'<td>' + arrAdr + '</td>' +
 								'<td>' + obj['row' + i].Duration + '</td>' +
+								'<td><input type="button" class="btn btn-danger" value="Remove" id=remove-' + obj['row' + i].JobID + '></td>' +
 							'</tr>');
 					}
+
+					$('#my-bookings-result input[type="button"]').click(function(item) {
+						console.log(item.delegateTarget.id);
+						console.log(item.delegateTarget.id.split('-')[1]);
+
+						// AJAX request here ! 
+
+					});
 				}
 			});
 		} else {

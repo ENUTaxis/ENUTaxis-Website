@@ -95,7 +95,8 @@ if( isset($_POST['departureTimestamp']) &&
  * and the duration (in minutes)
  */
 // Departure time
-	$departureDateTime = new DateTime("@$departureTimestamp", new DateTimeZone('Europe/London'));
+	$departureDateTime = new DateTime("@$departureTimestamp");
+	$departureDateTime->modify('+0 hours'); // Fix bug with timezone => GMT+1
 	$response['departureDateTime'] = $departureDateTime->format('Y-m-d H:i:s');
 // Departure time minus 20 minutes (only if not ASAP)
 	$departureDateTimeMinus20 = clone $departureDateTime;
@@ -103,6 +104,7 @@ if( isset($_POST['departureTimestamp']) &&
 	$response['departureDateTimeMinus20'] = $departureDateTimeMinus20->format('Y-m-d H:i:s');
 // Arrival time
 	$arrivalDateTime = clone $departureDateTime;
+	$arrivalDateTime->modify('-2 hours'); // Fix bug with timezone => GMT+1
 	$arrivalDateTime->modify('+'.$duration.' minutes');
 	$response['arrivalDateTime'] = $arrivalDateTime->format('Y-m-d H:i:s');
 // Create string type of all date/time variables for the query

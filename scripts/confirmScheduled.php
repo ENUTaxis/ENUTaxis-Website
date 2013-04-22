@@ -126,7 +126,8 @@ if( isset($_POST['studentName']) &&
 	if( is_numeric($_POST['departureDateTime']) ) {
 		// convert timestamp from ms to seconds
 		$departureDateTime = round( intval($_POST['departureDateTime']) / 1000 );
-		$departureDateTime = new DateTime("@$departureDateTime", new DateTimeZone('Europe/London'));
+		$departureDateTime = new DateTime("@$departureDateTime");
+		$departureDateTime->modify('+0 hours'); // Fix bug with timezone => GMT+1
 		$departureDateTimeString = $departureDateTime->format('Y-m-d H:i:s');
 	} else {
 		$response['error'] = "The timestamp of the departure is not numeric";
@@ -137,7 +138,8 @@ if( isset($_POST['studentName']) &&
 	if( is_numeric($_POST['arrivalDateTime']) ) {
 		// convert timestamp from ms to seconds
 		$arrivalDateTime = round( intval($_POST['arrivalDateTime']) / 1000 );
-		$arrivalDateTime = new DateTime("@$arrivalDateTime", new DateTimeZone('Europe/London'));
+		$arrivalDateTime = new DateTime("@$arrivalDateTime");
+		$arrivalDateTime->modify('+0 hours'); // Fix bug with timezone => GMT+1
 		$arrivalDateTimeString = $arrivalDateTime->format('Y-m-d H:i:s');
 	} else {
 		$response['error'] = "The timestamp of the arrival is not numeric";

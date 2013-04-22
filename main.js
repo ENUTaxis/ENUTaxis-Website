@@ -332,6 +332,7 @@ function handleFindButton() {
 				data: {
 					departureTimestamp: departureTime,
 					duration: duration,
+					distance: distance,
 					passengers: passengers,
 					isAsap: isAsap
 				}
@@ -347,7 +348,8 @@ function handleFindButton() {
 					$('#result').html('Driver name: ' + obj.driverName + 
 									  '<br>Max passengers available: ' + obj.passengers +
 									  '<br>Departure time: ' + obj.departureDateTime + 
-									  '<br>Arrival time: ' + obj.arrivalDateTime);
+									  '<br>Arrival time: ' + obj.arrivalDateTime +
+									  '<br>Cost: ' + obj.price);
 					price = obj.price;
 					// Convert from String to Timestamp
 					departureTime = new Date(obj.departureDateTime).valueOf(); 
@@ -832,7 +834,6 @@ function checkMatriculationNumber() {
 
 function checkPhoneNumber() {
 	var phoneNumber = $('#phone-nb').val();
-
 	if(phoneNumber.length > 9 && phoneNumber.length < 12 && !isNaN(phoneNumber)) {
 		return phoneNumber;
 	} else {

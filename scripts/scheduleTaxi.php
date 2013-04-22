@@ -12,6 +12,7 @@
  *	Parameters:
  *		- departure time (milliseconds timestamp)
  *		- journey duration in minutes
+ *		- journey distance in meters
  *		- number of people in the taxi
  *		- boolean if it's an As-Soon-As-Possible booking
  */
@@ -28,6 +29,7 @@ include("databaseConnection.php");
  */
 $departureTimestamp;
 $duration;
+$distance;
 $passengers;
 $isAsap;
 
@@ -35,8 +37,9 @@ $isAsap;
  * Set value of parameters
  */
 if( isset($_POST['departureTimestamp']) &&
-	isset($_POST['duration']) &&
 	isset($_POST['passengers']) &&
+	isset($_POST['duration']) &&
+	isset($_POST['distance']) &&
 	isset($_POST['isAsap'])
   ) {
 
@@ -53,6 +56,14 @@ if( isset($_POST['departureTimestamp']) &&
 		$duration = intval($_POST['duration']);
 	} else {
 		$response['error'] = "Duration is not numeric";
+		echo json_encode($response);
+		exit();
+	}
+
+	if( is_numeric($_POST['distance']) ) {
+		$distance = intval($_POST['distance']);
+	} else {
+		$response['error'] = "Distance is not numeric";
 		echo json_encode($response);
 		exit();
 	}
@@ -146,10 +157,16 @@ if($rows < 1) {
 	 * driver on the JSON response
 	 */
 	$driver = mysql_fetch_assoc($result);
-	$response['driverName'] = $driver['DriverName'];
 	$response['driverId']   = $driver['DriverId'];
+	$response['driverName'] = $driver['DriverName'];
 	$response['passengers'] = $driver['Passengers'];
-	$response['price']      = "4.54";
+
+	/*
+	 * Calculate the price of the journey
+	 * It's £2.50 and then 
+	 */
+	$response['price'] = 2.50 + ($distance/100)*0.08;
+	$response['price'] = round($response['price'], 2);
 }
 
 /*

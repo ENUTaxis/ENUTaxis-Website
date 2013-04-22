@@ -58,6 +58,16 @@ $(function() {
     	displaySuccessBox('Your taxi was booked with success!');
     }
 
+    /*
+     * Script for the presentation only
+     * What? display an information box when the 
+     * Taxi logo is clicked. The content of this
+     * box is "Any Question?"
+     */
+    $('#Taxi-logo').click(function() {
+		$("#info-box").show(800);
+    });
+
 	initializeTheMap();
 	handleMenuAndBoxes();
 	handleDropdownList();

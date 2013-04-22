@@ -369,9 +369,13 @@ footer{
 	text-decoration: none;
 }
 
-/* About box,Contact box, How-to box & Bookings box*/
+/* 
+ * About box, Contact box, How-to box, Bookings box, 
+ * Error box, Warning box, Success box, Info box
+ */
 #about-box, #contact-box, #howto-box, 
-#booking-box, #error-box, #warning-box, #success-box {
+#booking-box, #error-box, #warning-box, 
+#success-box, #info-box {
 	position: fixed;
 	top: 150px;
 	left: 50%;
@@ -385,6 +389,25 @@ footer{
 	width: 800px;
 	margin-left: -425px;
 }
+
+/*
+ * CSS attributes for the presentation
+ * "Any Question?" box
+ */
+#info-box {
+	width: 800px;
+	height: 400px;
+	margin-left: -425px;
+}
+
+#info-box h4 {
+	margin-top: 180px;
+	text-align: center;
+	font-size: 100px;
+}
+/*
+ * End
+ */
 
 #about-box p, #howto-box p {
 	text-indent: 25px;
@@ -403,8 +426,8 @@ footer{
 	border-color: #97B0B5;
 }
 
-/* Warning and Error and Success box */
-#warning-box, #error-box, #success-box {
+/* Warning and Error and Success and Info box */
+#warning-box, #error-box, #success-box, #info-box {
 	display: none;
 }
 

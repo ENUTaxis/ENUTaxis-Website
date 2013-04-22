@@ -51,6 +51,13 @@
  * General JS functions
  */
 $(function() {
+
+	console.log("URL parameters: " + getURLParameter('booking'));
+    if( getURLParameter('booking') == 'ok') {
+    	console.log("Will display success box");
+    	displaySuccessBox('Your taxi was booked with success!');
+    }
+
 	initializeTheMap();
 	handleMenuAndBoxes();
 	handleDropdownList();
@@ -61,6 +68,12 @@ $(function() {
 	handleConfirmButton();
 	autocompleteInputFieldsUsingGeocoder();
 });
+
+function getURLParameter(name) {
+    return decodeURI(
+        (RegExp(name + '=' + '(.+?)(&|$)').exec(location.search)||[,null])[1]
+    );
+}
 
 function handleMenuAndBoxes() {
 	/*
@@ -402,6 +415,7 @@ function handleConfirmButton() {
 				} else {
 					console.log("Succeed for booking");
 					console.log(obj);
+					window.location.href = "http://davidguyon.olympe.in/index.html?booking=ok";
 				}
 			}
 		});
@@ -809,6 +823,14 @@ function displayWarningBox(warningMessage) {
 	$("#warning-box").show(100);
 	setTimeout(function() {
 		$("#warning-box").hide(100);
+	}, 5000);
+}
+
+function displaySuccessBox(successMessage) {
+	$("#success-box").html(successMessage);
+	$("#success-box").show(100);
+	setTimeout(function() {
+		$("#success-box").hide(100);
 	}, 5000);
 }
 

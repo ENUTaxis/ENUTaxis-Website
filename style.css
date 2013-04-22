@@ -371,7 +371,7 @@ footer{
 
 /* About box,Contact box, How-to box & Bookings box*/
 #about-box, #contact-box, #howto-box, 
-#booking-box, #error-box, #warning-box {
+#booking-box, #error-box, #warning-box, #success-box {
 	position: fixed;
 	top: 150px;
 	left: 50%;
@@ -403,8 +403,8 @@ footer{
 	border-color: #97B0B5;
 }
 
-/* Warning and Error box */
-#warning-box, #error-box {
+/* Warning and Error and Success box */
+#warning-box, #error-box, #success-box {
 	display: none;
 }
 

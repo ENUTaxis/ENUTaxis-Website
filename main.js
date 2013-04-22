@@ -349,7 +349,7 @@ function handleFindButton() {
 									  '<br>Max passengers available: ' + obj.passengers +
 									  '<br>Departure time: ' + obj.departureDateTime + 
 									  '<br>Arrival time: ' + obj.arrivalDateTime +
-									  '<br>Cost: ' + obj.price);
+									  '<br>Cost: £' + obj.price);
 					price = obj.price;	
 					// Convert from String to Timestamp
 					departureTime = new Date(obj.departureDateTime).valueOf(); 

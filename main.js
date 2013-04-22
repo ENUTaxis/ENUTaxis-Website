@@ -350,7 +350,7 @@ function handleFindButton() {
 									  '<br>Departure time: ' + obj.departureDateTime + 
 									  '<br>Arrival time: ' + obj.arrivalDateTime +
 									  '<br>Cost: ' + obj.price);
-					price = obj.price;
+					price = obj.price;	
 					// Convert from String to Timestamp
 					departureTime = new Date(obj.departureDateTime).valueOf(); 
 					arrivalDateTime = new Date(obj.arrivalDateTime).valueOf();
@@ -546,7 +546,11 @@ function handleMapButton() {
 			// Display the minimize button
 			$("#minimize-button").show();
 
-			setTimeout(refreshMap, 500);
+			if(isFromMarkerSet && isToMarkerSet)
+				setTimeout(drawRouteOnTheMap, 500);
+			else
+				setTimeout(refreshMap, 500);
+
 			enableGMapControl();
 			mapExpanded = true;
 		});
@@ -570,6 +574,8 @@ function handleMapButton() {
 		$("#expand-button").show();
 		$("#expand-button").delay(700).fadeTo(500, 1);
 
+		if(isFromMarkerSet && isToMarkerSet)
+			setTimeout(drawRouteOnTheMap, 500);
 		mapExpanded = false;
 	});
 }
@@ -626,6 +632,7 @@ function drawRouteOnTheMap() {
 			duration = directionsRenderer.getDirections().routes[0].legs[0].duration.value;
 			duration /= 60;
 			duration = Math.round(duration);
+			refreshMap();
 		} else {
 			$.error("There was an error in your request. Requeststatus: " + status);
 		}

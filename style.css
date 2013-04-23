@@ -278,9 +278,13 @@ header ul a.actif {
 	background: url("data/images/gray triangle right.png") no-repeat;
 }
 
+#passengers {
+	padding-left: 10px;
+}
+
 #body-content fieldset select {
-        border-color:rgba(176, 25, 55, 0.6);
-        width: 100px;
+	border-color:rgba(176, 25, 55, 0.6);
+	width: 60px;
 }
 
 #left-part #legend.people h3 {
@@ -294,11 +298,16 @@ header ul a.actif {
 #body-content fieldset input {
 	margin-left: 20px;
 	margin-right: 20px;
-        border-color:rgba(176, 25, 55, 0.6);
+	border-color:rgba(176, 25, 55, 0.6);
 }
 
 #body-content #asap, #body-content #selectDateTime {
 	margin: 0;
+}
+
+#validate-date {
+	width: 270px;
+	margin-top: 4px;
 }
 
 #body-content #time-btns, #body-content #chosenDate,
@@ -395,15 +404,15 @@ footer{
  * "Any Question?" box
  */
 #info-box {
-	width: 800px;
+	width: 700px;
 	height: 400px;
-	margin-left: -425px;
+	margin-left: -375px;
 }
 
 #info-box h4 {
 	margin-top: 180px;
 	text-align: center;
-	font-size: 100px;
+	font-size: 90px;
 }
 /*
  * End

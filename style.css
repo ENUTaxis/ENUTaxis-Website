@@ -404,15 +404,15 @@ footer{
  * "Any Question?" box
  */
 #info-box {
-	width: 700px;
-	height: 400px;
-	margin-left: -375px;
+	width: 500px;
+	height: 200px;
+	margin-left: -275px;
 }
 
 #info-box h4 {
-	margin-top: 180px;
-	text-align: center;
-	font-size: 90px;
+	font-size: 30px;
+	margin-top: 10px;
+  margin-bottom: 10px;
 }
 /*
  * End

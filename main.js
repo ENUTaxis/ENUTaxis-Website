@@ -1,7 +1,7 @@
 /*
  * General variables
  */
- 	var debug = true;
+ 	var debug = false;
  	var isResultViewDisplayed = false;
 
 	// Calendar
@@ -52,21 +52,13 @@
  */
 $(function() {
 
-	console.log("URL parameters: " + getURLParameter('booking'));
-    if( getURLParameter('booking') == 'ok') {
-    	console.log("Will display success box");
-    	displaySuccessBox('Your taxi was booked with success!');
-    }
+	if(debug) console.log("URL parameters: " + getURLParameter('booking'));
+  if( getURLParameter('booking') == 'ok') {
+  	displaySuccessBox('Your taxi was booked with success!');
+  }
 
-    /*
-     * Script for the presentation only
-     * What? display an information box when the 
-     * Taxi logo is clicked. The content of this
-     * box is "Any Question?"
-     */
-    $('#Taxi-logo').click(function() {
-		$("#info-box").show(800);
-    });
+  // Show an information box "Where are you?"
+  $("#info-box").show();
 
 	initializeTheMap();
 	handleMenuAndBoxes();
@@ -230,7 +222,7 @@ function handleMenuAndBoxes() {
 				url:  'scripts/findScheduledTaxi.php',
 				data: { matriculationNumber: matriculationNumber }
 			}).done(function(JSONdata) {
-				console.log('JSON object received');
+				if(debug) console.log('JSON object received');
 				var obj = JSON.parse(JSONdata);
 				if(obj.hasOwnProperty('error')) {
 					displayFormView();
@@ -259,10 +251,12 @@ function handleMenuAndBoxes() {
 					}
 
 					$('#my-bookings-result input[type="button"]').click(function(item) {
-						console.log(item.delegateTarget.id);
-						console.log(item.delegateTarget.id.split('-')[1]);
-
-						// AJAX request here ! 
+						if(debug) {
+              console.log(item.delegateTarget.id);
+						  console.log(item.delegateTarget.id.split('-')[1]);
+            }
+						
+            // AJAX request here ! 
 
 					});
 				}
@@ -360,7 +354,7 @@ function handleFindButton() {
 					isAsap: isAsap
 				}
 			}).done(function(JSONdata) {
-				console.log('JSON object received');
+				if(debug) console.log('JSON object received');
 				var obj = JSON.parse(JSONdata);
 				if(obj.hasOwnProperty('error')) {
 					displayFormView();
@@ -413,7 +407,7 @@ function handleConfirmButton() {
 				driverId:           driverId
 			}
 		}).done(function(JSONdata) {
-			console.log('JSON object received');
+			if(debug) console.log('JSON object received');
 			var obj = JSON.parse(JSONdata);
 			if(obj.hasOwnProperty('error')) {
 				displayFormView();
@@ -423,8 +417,10 @@ function handleConfirmButton() {
 				if(obj.ok == false) {
 					$.error(obj.mysqlError);
 				} else {
-					console.log("Succeed for booking");
-					console.log(obj);
+					if(debug) {
+            console.log("Succeed for booking");
+					  console.log(obj);
+          }
 					window.location.href = "http://davidguyon.olympe.in/index.html?booking=ok";
 				}
 			}
@@ -531,7 +527,7 @@ function initializeTheMap() {
 	 * Listenner when direction is changed
 	 */
 	google.maps.event.addListener(directionsRenderer, 'directions_changed', function(event) {
-		console.log("Direction changed");
+		if(debug) console.log("Direction changed");
 		var fromLocation = directionsRenderer.getDirections().routes[0].legs[0].start_location;
 		var toLocation   = directionsRenderer.getDirections().routes[0].legs[0].end_location;
 		geocoder.geocode( {'latLng': fromLocation }, function(results, status) {
@@ -557,7 +553,7 @@ function initializeTheMap() {
 
 function handleMapButton() {
 	$("#expand-button").click(function() {
-		console.log("expand-button fired");
+		if(debug) console.log("expand-button fired");
 
 		// Hide the expand button
 		$("#expand-button").fadeTo(400, 0, function() {
@@ -581,7 +577,7 @@ function handleMapButton() {
 	});
 
 	$("#minimize-button").click(function() {
-		console.log("minimize-button fired");
+		if(debug) console.log("minimize-button fired");
 
 		disableGMapsControl();
 
@@ -606,8 +602,8 @@ function handleMapButton() {
 
 function refreshMap()
 {
-	console.log("refresh the G.Maps");
-    google.maps.event.trigger(map, 'resize');
+	if(debug) console.log("refresh the G.Maps");
+  google.maps.event.trigger(map, 'resize');
 }
 
 function disableGMapsControl() {
@@ -618,7 +614,7 @@ function disableGMapsControl() {
 		scrollwheel: false,
 		draggable: false
 	};
-    map.setOptions(mapOptions);
+  map.setOptions(mapOptions);
 }
 
 function enableGMapControl() {
@@ -629,7 +625,7 @@ function enableGMapControl() {
 		scrollwheel: true,
 		draggable: true
 	};
-    map.setOptions(mapOptions);
+  map.setOptions(mapOptions);
 }
 
 function drawRouteOnTheMap() {
@@ -651,7 +647,7 @@ function drawRouteOnTheMap() {
 			toMarker.setVisible(false);
 			directionsRenderer.setDirections(response);
 			map.fitBounds(bounds);
-			console.log(directionsRenderer.getDirections().routes[0].legs[0]);
+			if(debug) console.log(directionsRenderer.getDirections().routes[0].legs[0]);
 			distance = directionsRenderer.getDirections().routes[0].legs[0].distance.value;
 			duration = directionsRenderer.getDirections().routes[0].legs[0].duration.value;
 			duration /= 60;
@@ -762,7 +758,7 @@ function selectStreetAddress(addresses) {
 }
 
 function fillFormFromMarkers(address, isDeparture) {
-	console.log(address);
+	if(debug) console.log(address);
 	var streetNb   = address.address_components[0].long_name;
 	var streetName = address.address_components[1].long_name;
 	var postcode   = address.address_components[5].long_name;
@@ -806,7 +802,7 @@ function handleInitAndClickOnCalendar() {
 
 function hideCalendar() {
 	if(calendarDisplayed) {
-		console.log("Hide the calendar");
+		if(debug) console.log("Hide the calendar");
 		$("#datepicker-container").hide(300);
 		calendarDisplayed = false;
 	}
@@ -814,7 +810,7 @@ function hideCalendar() {
 
 function showCalendar() {
 	if(!calendarDisplayed) {
-		console.log("Show the calendar");
+		if(debug) console.log("Show the calendar");
 		$("#datepicker-container").show(200);
 		calendarDisplayed = true;
 	}
